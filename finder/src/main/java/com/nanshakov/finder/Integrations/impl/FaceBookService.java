@@ -21,6 +21,7 @@ public class FaceBookService extends BaseIntegrationImpl {
 
     @Override
     public Post getNext() {
-        return new Post("test");
+        //return new Post("test");
+        return null;
     }
 }
