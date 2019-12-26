@@ -1,13 +1,11 @@
 package com.nanshakov.finder.Integrations.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nanshakov.finder.Dto.Post;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -24,8 +22,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class Ifunny extends BaseIntegrationImpl {
 
-    @Autowired
-    private ObjectMapper mapper;
+    private String nextId = "1567508062";
 
     @Override
     public void start() {
@@ -40,9 +37,20 @@ public class Ifunny extends BaseIntegrationImpl {
     @SneakyThrows
     @PostConstruct
     void postConstruct() {
-        for (int i = 0; i < 100; i++) {
+        long startTime = System.nanoTime();
+        int count = 50;
+        for (int i = 0; i < count; i++) {
             Document doc = getPage(i);
+            if (doc == null) {
+                log.error("Shit happens, exit");
+                exit();
+            }
             Elements listNews = doc.select("img");
+            //получаем новые id
+            if (doc.selectFirst("li[data-next]") != null) {
+                nextId = doc.selectFirst("li[data-next]").attr("data-next");
+            }
+
             List<Post> posts = new ArrayList<>(listNews.size());
             listNews.forEach(el -> {
                 posts.add(parse(el));
@@ -53,12 +61,21 @@ public class Ifunny extends BaseIntegrationImpl {
                 log.error("Empty data!");
             }
         }
+
+        //статистика
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+        long totalCount = (count - 1) * 49;
+        log.info(totalCount);
+        long second = duration / 1_000_000_000;
+        log.info(second + "s");
+        log.info(totalCount / second + "per second");
     }
 
     @Null
     private Document getPage(long pageNum) {
         try {
-            return call("https://ifunny.co/api/tags/deutsch/1567508062?page=" + pageNum);
+            return call("https://ifunny.co/api/tags/deutsch/" + nextId + "?page=" + pageNum);
         } catch (IOException e) {
             log.error(e);
         }
