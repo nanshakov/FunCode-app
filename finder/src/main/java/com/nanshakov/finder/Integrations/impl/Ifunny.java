@@ -1,6 +1,7 @@
 package com.nanshakov.finder.Integrations.impl;
 
 import com.nanshakov.finder.Dto.Post;
+import com.nanshakov.finder.Integrations.Platform;
 import com.nanshakov.finder.Integrations.Type;
 
 import org.jsoup.Jsoup;
@@ -24,7 +25,6 @@ import lombok.extern.log4j.Log4j2;
 public class Ifunny extends BaseIntegrationImpl {
 
     private String nextId = "1567508062";
-    Type type = Type.IFUNNY;
 
     @Override
     public void start() {
@@ -34,6 +34,11 @@ public class Ifunny extends BaseIntegrationImpl {
     @Override
     public Post getNext() {
         return null;
+    }
+
+    @Override
+    public Platform getPlatform() {
+        return Platform.IFUNNY;
     }
 
     @SneakyThrows
@@ -94,7 +99,8 @@ public class Ifunny extends BaseIntegrationImpl {
             return Post.builder()
                     .url(url)
                     .alt(alt)
-                    .type(Type.IFUNNY)
+                    .from(getPlatform())
+                    .type(Type.PHOTO)
                     .build();
         }
         return null;

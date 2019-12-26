@@ -7,4 +7,6 @@ public interface BaseIntegration {
     void start();
 
     Post getNext();
+
+    Platform getPlatform();
 }

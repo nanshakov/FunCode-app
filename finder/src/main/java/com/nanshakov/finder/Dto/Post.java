@@ -1,5 +1,6 @@
 package com.nanshakov.finder.Dto;
 
+import com.nanshakov.finder.Integrations.Platform;
 import com.nanshakov.finder.Integrations.Type;
 
 import lombok.AllArgsConstructor;
@@ -13,5 +14,6 @@ public class Post {
 
     String url;
     String alt;
+    Platform from;
     Type type;
 }
