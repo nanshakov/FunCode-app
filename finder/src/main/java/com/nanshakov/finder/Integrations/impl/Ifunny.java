@@ -1,6 +1,7 @@
 package com.nanshakov.finder.Integrations.impl;
 
 import com.nanshakov.finder.Dto.Post;
+import com.nanshakov.finder.Integrations.Type;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,6 +24,7 @@ import lombok.extern.log4j.Log4j2;
 public class Ifunny extends BaseIntegrationImpl {
 
     private String nextId = "1567508062";
+    Type type = Type.IFUNNY;
 
     @Override
     public void start() {
@@ -37,8 +39,7 @@ public class Ifunny extends BaseIntegrationImpl {
     @SneakyThrows
     @PostConstruct
     void postConstruct() {
-        long startTime = System.nanoTime();
-        int count = 50;
+        int count = Integer.MAX_VALUE;
         for (int i = 0; i < count; i++) {
             Document doc = getPage(i);
             if (doc == null) {
@@ -49,11 +50,15 @@ public class Ifunny extends BaseIntegrationImpl {
             //получаем новые id
             if (doc.selectFirst("li[data-next]") != null) {
                 nextId = doc.selectFirst("li[data-next]").attr("data-next");
+            } else {
+                break;
             }
-
             List<Post> posts = new ArrayList<>(listNews.size());
             listNews.forEach(el -> {
-                posts.add(parse(el));
+                Post post = parse(el);
+                if (post != null) {
+                    posts.add(post);
+                }
             });
             if (!posts.isEmpty()) {
                 //posts.forEach(p -> template.send(topic, p));
@@ -61,15 +66,6 @@ public class Ifunny extends BaseIntegrationImpl {
                 log.error("Empty data!");
             }
         }
-
-        //статистика
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime);
-        long totalCount = (count - 1) * 49;
-        log.info(totalCount);
-        long second = duration / 1_000_000_000;
-        log.info(second + "s");
-        log.info(totalCount / second + "per second");
     }
 
     @Null
@@ -98,6 +94,7 @@ public class Ifunny extends BaseIntegrationImpl {
             return Post.builder()
                     .url(url)
                     .alt(alt)
+                    .type(Type.IFUNNY)
                     .build();
         }
         return null;
