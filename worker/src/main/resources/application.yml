@@ -1,14 +1,11 @@
-#Ifunny
-type: IFUNNY
-token: ""
-tag: "deutsch"
-
+IFUNNY:
+  download-url: "https://img.ifunny.co/images/"
 spring:
   redis:
     host: docker01.dev.mdlp.crpt.tech:9092
     port: 6379
   kafka:
     bootstrap-servers: docker01.dev.mdlp.crpt.tech:9092
-    producer:
+    consumer:
       topic: "nanshakov"
 #      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

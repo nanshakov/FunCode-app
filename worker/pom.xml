@@ -2,28 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <artifactId>finder2</artifactId>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <groupId>org.springframework.boot</groupId>
-            </plugin>
-        </plugins>
-    </build>
+    <artifactId>worker</artifactId>
     <dependencies>
         <dependency>
             <artifactId>spring-boot-starter-web</artifactId>
             <groupId>org.springframework.boot</groupId>
         </dependency>
         <dependency>
-            <artifactId>spring-kafka</artifactId>
             <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
         </dependency>
         <dependency>
-            <artifactId>lombok</artifactId>
             <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -31,25 +22,25 @@
             <groupId>org.jsoup</groupId>
         </dependency>
         <dependency>
-            <artifactId>spring-boot-starter-test</artifactId>
             <exclusions>
                 <exclusion>
-                    <artifactId>junit-vintage-engine</artifactId>
                     <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
+            <artifactId>spring-boot-starter-test</artifactId>
             <groupId>org.springframework.boot</groupId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <artifactId>spring-kafka-test</artifactId>
             <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
     <description>Demo project for Spring Boot</description>
-
     <modelVersion>4.0.0</modelVersion>
+    <name>worker</name>
 
     <parent>
         <artifactId>FunCode-app</artifactId>
@@ -57,7 +48,6 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <version>1.0-SNAPSHOT</version>
-
+    <version>0.0.1-SNAPSHOT</version>
 
 </project>
