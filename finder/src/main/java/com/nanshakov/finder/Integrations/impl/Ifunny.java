@@ -5,6 +5,8 @@ import com.nanshakov.finder.Integrations.BaseIntegration;
 import com.nanshakov.finder.Integrations.Platform;
 import com.nanshakov.finder.Integrations.Type;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -57,11 +59,15 @@ public class Ifunny implements BaseIntegration {
                 }
             });
             if (!posts.isEmpty()) {
-                //posts.forEach(p -> template.send(topic, p));
+                posts.forEach(this::sendToKafka);
             } else {
                 log.error("Empty data!");
             }
         }
+    }
+
+    private void sendToKafka(Post p) {
+        template.send(topic, DigestUtils.sha512Hex(DigestUtils.sha256(SerializationUtils.serialize(p))), p);
     }
 
     @Override
