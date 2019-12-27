@@ -18,6 +18,7 @@
     <modules>
         <module>finder</module>
         <module>worker</module>
+        <module>common</module>
     </modules>
 
     <packaging>pom</packaging>

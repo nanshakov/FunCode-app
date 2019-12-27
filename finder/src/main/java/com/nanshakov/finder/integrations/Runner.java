@@ -1,7 +1,8 @@
-package com.nanshakov.finder.Integrations;
+package com.nanshakov.finder.integrations;
 
-import com.nanshakov.finder.Dto.Post;
-import com.nanshakov.finder.Integrations.impl.Ifunny;
+import com.nanshakov.dto.Platform;
+import com.nanshakov.finder.dto.Post;
+import com.nanshakov.finder.integrations.impl.Ifunny;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;

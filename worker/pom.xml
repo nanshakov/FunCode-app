@@ -5,6 +5,11 @@
     <artifactId>worker</artifactId>
     <dependencies>
         <dependency>
+            <artifactId>common</artifactId>
+            <groupId>com.nanshakov</groupId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <artifactId>spring-boot-starter-web</artifactId>
             <groupId>org.springframework.boot</groupId>
         </dependency>
@@ -48,6 +53,6 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
 
 </project>

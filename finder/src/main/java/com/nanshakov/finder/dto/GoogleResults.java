@@ -1,4 +1,4 @@
-package com.nanshakov.finder.Dto;
+package com.nanshakov.finder.dto;
 
 import java.util.List;
 

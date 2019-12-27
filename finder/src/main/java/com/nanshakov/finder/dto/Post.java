@@ -1,7 +1,7 @@
-package com.nanshakov.finder.Dto;
+package com.nanshakov.finder.dto;
 
-import com.nanshakov.finder.Integrations.Platform;
-import com.nanshakov.finder.Integrations.Type;
+import com.nanshakov.dto.Platform;
+import com.nanshakov.dto.Type;
 
 import java.io.Serializable;
 

@@ -1,6 +1,6 @@
-package com.nanshakov.finder.Сonfiguration;
+package com.nanshakov.worker.configuration;
 
-import com.nanshakov.finder.Dto.Post;
+import com.nanshakov.dto.Post;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -12,8 +12,6 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.support.converter.RecordMessageConverter;
-import org.springframework.kafka.support.converter.StringJsonMessageConverter;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
@@ -25,11 +23,6 @@ public class Configuration {
 
     @Value("${spring.kafka.producer.topic}")
     private String topic;
-
-//    @Bean
-//    public RecordMessageConverter converter() {
-//        return new StringJsonMessageConverter();
-//    }
 
     @Bean
     public ProducerFactory<String, Post> producerFactory() {
@@ -53,14 +46,5 @@ public class Configuration {
                 .compact()
                 .build();
     }
-
-//    @Bean
-//    public NewTopic dlt() {
-//        return TopicBuilder.name("topic1.DLT")
-//                .partitions(1)
-//                .replicas(1)
-//                .compact()
-//                .build();
-//    }
 
 }

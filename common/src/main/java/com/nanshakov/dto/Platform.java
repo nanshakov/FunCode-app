@@ -1,4 +1,4 @@
-package com.nanshakov.finder.Integrations;
+package com.nanshakov.dto;
 
 public enum Platform {
     WEB,

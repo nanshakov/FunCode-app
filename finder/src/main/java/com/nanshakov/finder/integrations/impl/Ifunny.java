@@ -1,9 +1,9 @@
-package com.nanshakov.finder.Integrations.impl;
+package com.nanshakov.finder.integrations.impl;
 
-import com.nanshakov.finder.Dto.Post;
-import com.nanshakov.finder.Integrations.BaseIntegration;
-import com.nanshakov.finder.Integrations.Platform;
-import com.nanshakov.finder.Integrations.Type;
+import com.nanshakov.dto.Platform;
+import com.nanshakov.dto.Type;
+import com.nanshakov.finder.dto.Post;
+import com.nanshakov.finder.integrations.BaseIntegration;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.SerializationUtils;
