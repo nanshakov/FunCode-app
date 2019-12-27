@@ -1,8 +1,8 @@
 package com.nanshakov.finder.integrations.impl;
 
 import com.nanshakov.dto.Platform;
+import com.nanshakov.dto.Post;
 import com.nanshakov.dto.Type;
-import com.nanshakov.finder.dto.Post;
 import com.nanshakov.finder.integrations.BaseIntegration;
 
 import org.apache.commons.codec.digest.DigestUtils;

@@ -1,15 +1,13 @@
 package com.nanshakov.finder.integrations;
 
 import com.nanshakov.dto.Platform;
-import com.nanshakov.finder.dto.Post;
+import com.nanshakov.dto.Post;
 import com.nanshakov.finder.integrations.impl.Ifunny;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,8 +26,7 @@ public class Runner {
     @Value("${tag}")
     private String tag;
 
-    @PostConstruct
-    void postConstruct() {
+    public void start() {
         BaseIntegration integration = null;
         if (type == Platform.IFUNNY) {
             integration = new Ifunny(ctx, kafkaTemplate, topic, tag);
@@ -40,4 +37,5 @@ public class Runner {
             throw new IllegalStateException("Не удалось найти реализацию для типа " + type);
         }
     }
+
 }

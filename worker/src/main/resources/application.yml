@@ -1,13 +1,21 @@
 IFUNNY:
   download-url: "https://img.ifunny.co/images/"
+#spring:
+#  redis:
+#    host: docker01.dev.mdlp.crpt.tech
+#    port: 6379
+
 spring:
   redis:
     host: docker01.dev.mdlp.crpt.tech:9092
     port: 6379
-
   kafka:
-    topic: "nanshakov"
-    group:
-      id: 1
-    bootstrap-servers: docker01.dev.mdlp.crpt.tech:9092
-#   value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    bootstrap:
+      servers: docker01.dev.mdlp.crpt.tech:9092
+    consumer:
+      bootstrap:
+        servers: docker01.dev.mdlp.crpt.tech:9092
+      group:
+        id: 1
+      auto-offset-reset: earliest
+      topic: "nanshakov2"
