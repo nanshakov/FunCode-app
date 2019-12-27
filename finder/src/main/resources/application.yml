@@ -8,7 +8,6 @@ spring:
     host: docker01.dev.mdlp.crpt.tech:9092
     port: 6379
   kafka:
+    topic: "nanshakov"
     bootstrap-servers: docker01.dev.mdlp.crpt.tech:9092
-    producer:
-      topic: "nanshakov"
 #      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

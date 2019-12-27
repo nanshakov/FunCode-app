@@ -4,8 +4,10 @@ spring:
   redis:
     host: docker01.dev.mdlp.crpt.tech:9092
     port: 6379
+
   kafka:
+    topic: "nanshakov"
+    group:
+      id: 1
     bootstrap-servers: docker01.dev.mdlp.crpt.tech:9092
-    consumer:
-      topic: "nanshakov"
-#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#   value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

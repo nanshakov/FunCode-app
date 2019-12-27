@@ -21,7 +21,7 @@ import java.util.Map;
 @EnableKafka
 public class Configuration {
 
-    @Value("${spring.kafka.producer.topic}")
+    @Value("${kafka.topic}")
     private String topic;
 
     @Bean
