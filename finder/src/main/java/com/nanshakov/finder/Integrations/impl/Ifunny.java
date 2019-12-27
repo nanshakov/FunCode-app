@@ -1,6 +1,7 @@
 package com.nanshakov.finder.Integrations.impl;
 
 import com.nanshakov.finder.Dto.Post;
+import com.nanshakov.finder.Integrations.BaseIntegration;
 import com.nanshakov.finder.Integrations.Platform;
 import com.nanshakov.finder.Integrations.Type;
 
@@ -8,48 +9,38 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.stereotype.Service;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.validation.constraints.Null;
 
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-@Service
 @Log4j2
-public class Ifunny extends BaseIntegrationImpl {
+@RequiredArgsConstructor
+public class Ifunny implements BaseIntegration {
 
     private String nextId = "1567508062";
+    private final ApplicationContext ctx;
+    private final KafkaTemplate<String, Post> template;
+    private final String topic;
+    private final String tag;
 
     @Override
     public void start() {
-
-    }
-
-    @Override
-    public Post getNext() {
-        return null;
-    }
-
-    @Override
-    public Platform getPlatform() {
-        return Platform.IFUNNY;
-    }
-
-    @SneakyThrows
-    @PostConstruct
-    void postConstruct() {
+        printBaseInfo();
         int count = Integer.MAX_VALUE;
         for (int i = 0; i < count; i++) {
             Document doc = getPage(i);
             if (doc == null) {
                 log.error("Shit happens, exit");
-                exit();
+                ((ConfigurableApplicationContext) ctx).close();
             }
             Elements listNews = doc.select("img");
             //получаем новые id
@@ -73,10 +64,22 @@ public class Ifunny extends BaseIntegrationImpl {
         }
     }
 
+    @Override
+    public Platform getPlatform() {
+        return Platform.IFUNNY;
+    }
+
     @Null
     private Document getPage(long pageNum) {
         try {
-            return call("https://ifunny.co/api/tags/deutsch/" + nextId + "?page=" + pageNum);
+            StringBuilder url = new StringBuilder();
+            url.append("https://ifunny.co/api/tags/")
+                    .append(tag)
+                    .append("/")
+                    .append(nextId)
+                    .append("?page=")
+                    .append(pageNum);
+            return call(url.toString());
         } catch (IOException e) {
             log.error(e);
         }
@@ -104,5 +107,11 @@ public class Ifunny extends BaseIntegrationImpl {
                     .build();
         }
         return null;
+    }
+
+    void printBaseInfo() {
+        log.info(new StringBuilder()
+                .append("Модуль : ").append(getPlatform()).append("\n")
+                .append("Теги : ").append(tag));
     }
 }
