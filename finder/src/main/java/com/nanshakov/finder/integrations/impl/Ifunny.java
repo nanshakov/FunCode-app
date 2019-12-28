@@ -67,7 +67,7 @@ public class Ifunny implements BaseIntegration {
     }
 
     private void sendToKafka(Post p) {
-        template.send(topic, DigestUtils.sha512Hex(DigestUtils.sha256(SerializationUtils.serialize(p))), p);
+        template.send(topic, DigestUtils.sha1Hex(DigestUtils.sha1(SerializationUtils.serialize(p))), p);
     }
 
     @Override
@@ -117,7 +117,7 @@ public class Ifunny implements BaseIntegration {
 
     void printBaseInfo() {
         log.info(new StringBuilder()
-                .append("Модуль : ").append(getPlatform()).append("\n")
-                .append("Теги : ").append(tag));
+                .append("Module : ").append(getPlatform()).append("\n")
+                .append("Tags : ").append(tag));
     }
 }

@@ -27,6 +27,15 @@
             <groupId>org.jsoup</groupId>
         </dependency>
         <dependency>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <groupId>org.springframework.boot</groupId>
+        </dependency>
+        <dependency>
+            <artifactId>jedis</artifactId>
+            <groupId>redis.clients</groupId>
+            <type>jar</type>
+        </dependency>
+        <dependency>
             <exclusions>
                 <exclusion>
                     <groupId>org.junit.vintage</groupId>

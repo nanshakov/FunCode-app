@@ -6,6 +6,11 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
@@ -19,6 +24,7 @@ import java.util.Map;
 
 @org.springframework.context.annotation.Configuration
 @EnableKafka
+@Import(Jedis.class)
 public class Configuration {
 
     @Value("${spring.kafka.consumer.bootstrap.servers}")
@@ -46,11 +52,6 @@ public class Configuration {
 
     @Bean
     public Map<String, Object> consumerConfigs() {
-//        JsonDeserializer<Post> deserializer = new JsonDeserializer<>(Post.class);
-//        deserializer.setRemoveTypeHeaders(false);
-//        deserializer.addTrustedPackages("*");
-//        deserializer.setUseTypeMapperForKey(true);
-
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -61,13 +62,17 @@ public class Configuration {
         return props;
     }
 
-//    @Bean
-//    public NewTopic topic() {
-//        return TopicBuilder.name(topic)
-//                .partitions(3)
-//                .replicas(1)
-//                .compact()
-//                .build();
-//    }
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate() {
+        final RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
+        template.setConnectionFactory(jedisConnectionFactory());
+        template.setValueSerializer(new GenericToStringSerializer<Object>(Object.class));
+        return template;
+    }
 
+    @Bean
+    JedisConnectionFactory jedisConnectionFactory() {
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration("docker01.dev.mdlp.crpt.tech", 6379);
+        return new JedisConnectionFactory(config);
+    }
 }
