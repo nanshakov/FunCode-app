@@ -16,8 +16,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.validation.constraints.Null;
 
@@ -43,6 +41,7 @@ public class Ifunny implements BaseIntegration {
             if (doc == null) {
                 log.error("Shit happens, exit");
                 ((ConfigurableApplicationContext) ctx).close();
+                return;
             }
             Elements listNews = doc.select("img");
             //получаем новые id
@@ -51,23 +50,14 @@ public class Ifunny implements BaseIntegration {
             } else {
                 break;
             }
-            List<Post> posts = new ArrayList<>(listNews.size());
-            listNews.forEach(el -> {
-                Post post = parse(el);
-                if (post != null) {
-                    posts.add(post);
-                }
-            });
-            if (!posts.isEmpty()) {
-                posts.forEach(this::sendToKafka);
-            } else {
-                log.error("Empty data!");
-            }
+            listNews.forEach(el -> sendToKafka(parse(el)));
         }
     }
 
-    private void sendToKafka(Post p) {
-        template.send(topic, DigestUtils.sha1Hex(DigestUtils.sha1(SerializationUtils.serialize(p))), p);
+    private void sendToKafka(@Null Post p) {
+        if (p != null) {
+            template.send(topic, DigestUtils.sha1Hex(DigestUtils.sha1(SerializationUtils.serialize(p))), p);
+        }
     }
 
     @Override

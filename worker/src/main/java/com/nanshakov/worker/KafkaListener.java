@@ -20,18 +20,16 @@ public class KafkaListener {
 
     @Value("${spring.kafka.consumer.group.id}")
     private String kafkaGroupId;
-    @Value("${spring.redis.channel}")
-    private String channel;
 
     @SuppressWarnings("ConstantConditions")
     @org.springframework.kafka.annotation.KafkaListener(topics = "${spring.kafka.consumer.topic}")
     public void consume(ConsumerRecord<String, Post> rawMessage) {
         log.trace("=> consumed {}", rawMessage.value());
         if (!redisTemplate.opsForValue().setIfAbsent(rawMessage.key(), Status.ACCEPTED)) {
-            log.info("{} found in redis, do nothing", rawMessage.key());
+            log.trace("{} found in redis, do nothing", rawMessage.key());
             return;
         }
-        log.info("Processing {}", rawMessage.key());
+        log.trace("Processing {}", rawMessage.key());
 
     }
 
