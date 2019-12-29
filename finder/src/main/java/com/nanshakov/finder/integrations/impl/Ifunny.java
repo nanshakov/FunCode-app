@@ -25,6 +25,8 @@ public class Ifunny extends BaseIntegrationImpl {
     private String nextId = "1567508062";
     @Value("${tag}")
     private String tag;
+    @Value("${IFUNNY.download-url}")
+    private String downloadUrl;
 
     @PostConstruct
     public void postConstruct() {
@@ -96,8 +98,10 @@ public class Ifunny extends BaseIntegrationImpl {
         String url = el.attr("data-src");
         if (url != null && !url.isEmpty()) {
             String alt = el.attr("alt");
+            String[] parts = url.split("/");
             return Post.builder()
-                    .url(url)
+                    //TODO [экстремальное программирование] хорошо бы как-то проверить что их и правда 5...
+                    .url(downloadUrl + parts[5])
                     .alt(alt)
                     .from(getPlatform())
                     .type(Type.PHOTO)
