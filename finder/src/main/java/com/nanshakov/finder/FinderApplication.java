@@ -1,27 +1,16 @@
 package com.nanshakov.finder;
 
-import com.nanshakov.finder.integrations.Runner;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
-public class FinderApplication implements CommandLineRunner {
-
-    @Autowired
-    private Runner runner;
+public class FinderApplication {
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(FinderApplication.class)
                 .web(WebApplicationType.NONE)
                 .run(args);
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        runner.start();
     }
 }

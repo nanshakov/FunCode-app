@@ -5,10 +5,10 @@ tag: "deutsch"
 
 spring:
   redis:
-    host: docker01.dev.mdlp.crpt.tech:9092
+    host: docker01.dev.mdlp.crpt.tech
     port: 6379
   kafka:
     producer:
       bootstrap:
         servers: docker01.dev.mdlp.crpt.tech:9092
-      topic: "nanshakov2"
+      topic: "nanshakov3"

@@ -1,4 +1,4 @@
-package com.nanshakov.worker.configuration;
+package com.nanshakov.finder.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;

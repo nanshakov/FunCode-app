@@ -3,44 +3,43 @@ package com.nanshakov.finder.integrations.impl;
 import com.nanshakov.dto.Platform;
 import com.nanshakov.dto.Post;
 import com.nanshakov.dto.Type;
-import com.nanshakov.finder.integrations.BaseIntegration;
 
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.SerializationUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
 import javax.validation.constraints.Null;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@RequiredArgsConstructor
-public class Ifunny implements BaseIntegration {
+@Service
+public class Ifunny extends BaseIntegrationImpl {
 
     private String nextId = "1567508062";
-    private final ApplicationContext ctx;
-    private final KafkaTemplate<String, Post> template;
-    private final String topic;
-    private final String tag;
+    @Value("${tag}")
+    private String tag;
+
+    @PostConstruct
+    public void postConstruct() {
+        if (type.equals(getPlatform().toString())) { start(); }
+    }
 
     @Override
     public void start() {
         printBaseInfo();
+        log.info("Started...");
         int count = Integer.MAX_VALUE;
         for (int i = 0; i < count; i++) {
             Document doc = getPage(i);
             if (doc == null) {
-                log.error("Shit happens, exit");
-                ((ConfigurableApplicationContext) ctx).close();
+                close();
                 return;
             }
             Elements listNews = doc.select("img");
@@ -50,13 +49,15 @@ public class Ifunny implements BaseIntegration {
             } else {
                 break;
             }
-            listNews.forEach(el -> sendToKafka(parse(el)));
-        }
-    }
-
-    private void sendToKafka(@Null Post p) {
-        if (p != null) {
-            template.send(topic, DigestUtils.sha1Hex(DigestUtils.sha1(SerializationUtils.serialize(p))), p);
+            listNews.forEach(el -> {
+                Post post = parse(el);
+                String hash = calculateHash(post);
+                if (post != null && !exist(hash)) {
+                    sendToKafka(hash, post);
+                } else {
+                    log.info("Post {} with hash {} found in DBs, do nopostthing", post, hash);
+                }
+            });
         }
     }
 

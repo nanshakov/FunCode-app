@@ -48,6 +48,15 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<groupId>org.springframework.boot</groupId>
+		</dependency>
+		<dependency>
+			<artifactId>jedis</artifactId>
+			<groupId>redis.clients</groupId>
+			<type>jar</type>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka-test</artifactId>
 			<scope>test</scope>

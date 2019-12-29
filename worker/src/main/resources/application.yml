@@ -18,4 +18,4 @@ spring:
       group:
         id: 1
       auto-offset-reset: earliest
-      topic: "nanshakov2"
+      topic: "nanshakov3"
