@@ -3,6 +3,7 @@ package com.nanshakov.finder.integrations.impl;
 import com.nanshakov.dto.Post;
 import com.nanshakov.finder.dto.Status;
 import com.nanshakov.finder.integrations.BaseIntegration;
+import com.nanshakov.finder.repo.PostMetaRepository;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.SerializationUtils;
@@ -28,10 +29,16 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
     private String topic;
     @Autowired
     private ApplicationContext ctx;
+    @Autowired
+    private PostMetaRepository postMetaRepository;
 
     @SuppressWarnings("ConstantConditions")
     public boolean exist(String hash) {
-        return !redisTemplate.opsForValue().setIfAbsent(hash, Status.ACCEPTED);
+        if (!redisTemplate.opsForValue().setIfAbsent(hash, Status.ACCEPTED)) {
+            return true;
+        } else {
+            return postMetaRepository.contains(hash);
+        }
     }
 
     public void close() {

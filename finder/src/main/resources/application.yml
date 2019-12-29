@@ -4,6 +4,11 @@ token: ""
 tag: "deutsch"
 
 spring:
+  datasource:
+    driver-class-name: "ru.yandex.clickhouse.ClickHouseDriver"
+    url: "jdbc:clickhouse://docker01.dev.mdlp.crpt.tech:8123/default"
+    username: ""
+    password: ""
   redis:
     host: docker01.dev.mdlp.crpt.tech
     port: 6379
