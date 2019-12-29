@@ -55,7 +55,7 @@ public class Ifunny extends BaseIntegrationImpl {
                 if (post != null && !exist(hash)) {
                     sendToKafka(hash, post);
                 } else {
-                    log.info("Post {} with hash {} found in DBs, do nopostthing", post, hash);
+                    log.info("Post {} with hash {} found in DBs, do nothing", post, hash);
                 }
             });
         }
