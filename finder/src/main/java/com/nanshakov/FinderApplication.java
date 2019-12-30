@@ -25,6 +25,8 @@ public class FinderApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        integrations.forEach(BaseIntegration::start);
+        for (BaseIntegration integration : integrations) {
+            integration.start();
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.nanshakov.parser.repo;
+package com.nanshakov.common.repo;
 
 import com.nanshakov.common.dto.PostWithMeta;
 

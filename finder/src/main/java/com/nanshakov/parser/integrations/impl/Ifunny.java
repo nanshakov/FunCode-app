@@ -4,7 +4,6 @@ import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.Post;
 import com.nanshakov.common.dto.Type;
 
-import org.apache.http.client.fluent.Request;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -34,7 +33,8 @@ public class Ifunny extends BaseIntegrationImpl {
 //    }
 
     @Override
-    public void start() {
+    public void start() throws InterruptedException {
+        Thread.sleep(10000);
         if (!type.equals(getPlatform().toString())) { return; }
         printBaseInfo();
         log.info("Started...");
@@ -54,31 +54,14 @@ public class Ifunny extends BaseIntegrationImpl {
             }
             listNews.forEach(el -> {
                 Post post = parse(el);
-                String hash = calculateHash(post.getImg());
+                String hash = calculateHash(post) + "3";
                 if (!exist(hash)) {
                     sendToKafka(hash, post);
                 } else {
-                    log.info("Post {} with hash {} found in DBs, do nothing", post, hash);
+                    log.trace("Post {} with hash {} found in redis, do nothing", post, hash);
                 }
             });
         }
-    }
-
-    public byte[] copyURLToByteArray(final String urlStr)
-            throws IOException {
-        return copyURLToByteArray(urlStr, 5000, 5000);
-    }
-
-    public byte[] copyURLToByteArray(
-            final String urlStr,
-            final int connectionTimeout, final int readTimeout)
-            throws IOException {
-        return Request.Get(urlStr)
-                .connectTimeout(connectionTimeout)
-                .socketTimeout(readTimeout)
-                .execute()
-                .returnContent()
-                .asBytes();
     }
 
     @Override
@@ -119,17 +102,12 @@ public class Ifunny extends BaseIntegrationImpl {
             String[] parts = dataSrc.split("/");
             //TODO [экстремальное программирование] хорошо бы как-то проверить что их и правда 5...
             String url = downloadUrl + parts[5];
-            try {
-                return Post.builder()
-                        .url(url)
-                        .alt(alt)
-                        .from(getPlatform())
-                        .type(Type.PHOTO)
-                        .img(copyURLToByteArray(url))
-                        .build();
-            } catch (IOException e) {
-                log.error(e);
-            }
+            return Post.builder()
+                    .url(url)
+                    .alt(alt)
+                    .from(getPlatform())
+                    .type(Type.PHOTO)
+                    .build();
         }
         return null;
     }

@@ -53,7 +53,7 @@ public class Kafka {
         ConcurrentKafkaListenerContainerFactory<String, Post> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-        //factory.setConcurrency(3);
+        factory.setConcurrency(3);
         factory.getContainerProperties().setPollTimeout(3000);
         return factory;
     }
@@ -74,4 +74,13 @@ public class Kafka {
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         return props;
     }
+
+//    @Bean
+//    public NewTopic topic() {
+//        return TopicBuilder.name(topic)
+//                .partitions(6)
+//                .replicas(1)
+//                .compact()
+//                .build();
+//    }
 }

@@ -1,20 +1,16 @@
 package com.nanshakov.parser.integrations.impl;
 
+import com.nanshakov.common.Utils;
 import com.nanshakov.common.dto.Post;
 import com.nanshakov.configuration.Status;
 import com.nanshakov.parser.integrations.BaseIntegration;
-import com.nanshakov.parser.repo.PostMetaRepository;
 
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
-
-import java.io.Serializable;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -31,16 +27,10 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
     private String topic;
     @Autowired
     private ApplicationContext ctx;
-    @Autowired
-    private PostMetaRepository postMetaRepository;
 
     @SuppressWarnings("ConstantConditions")
     public boolean exist(String hash) {
-        if (!redisTemplate.opsForValue().setIfAbsent(hash, Status.ACCEPTED)) {
-            return true;
-        } else {
-            return postMetaRepository.contains(hash);
-        }
+        return !redisTemplate.opsForValue().setIfAbsent(hash, Status.ACCEPTED);
     }
 
     public void close() {
@@ -53,7 +43,7 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
     }
 
     public String calculateHash(Object o) {
-        return DigestUtils.sha1Hex(DigestUtils.sha1(SerializationUtils.serialize((Serializable) o)));
+        return Utils.calculateHashSha1(o);
     }
 
 

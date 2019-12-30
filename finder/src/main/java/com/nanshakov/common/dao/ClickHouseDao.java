@@ -1,7 +1,7 @@
-package com.nanshakov.parser.dao;
+package com.nanshakov.common.dao;
 
 import com.nanshakov.common.dto.PostWithMeta;
-import com.nanshakov.parser.repo.PostMetaRepository;
+import com.nanshakov.common.repo.PostMetaRepository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class Dao implements PostMetaRepository {
+public class ClickHouseDao implements PostMetaRepository {
 
     private final JdbcTemplate jdbcTemplate;
 

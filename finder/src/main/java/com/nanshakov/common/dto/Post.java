@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @AllArgsConstructor
@@ -18,6 +17,5 @@ public class Post implements Serializable {
     String alt;
     Platform from;
     Type type;
-    @ToString.Exclude
-    byte[] img;
+
 }
