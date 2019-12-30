@@ -17,8 +17,6 @@
     <modelVersion>4.0.0</modelVersion>
     <modules>
         <module>finder</module>
-        <module>worker</module>
-        <module>common</module>
     </modules>
 
     <packaging>pom</packaging>

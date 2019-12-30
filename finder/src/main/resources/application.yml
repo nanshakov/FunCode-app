@@ -16,7 +16,13 @@ spring:
     host: docker01.dev.mdlp.crpt.tech
     port: 6379
   kafka:
+    topic: "nanshakov3"
     producer:
       bootstrap:
         servers: docker01.dev.mdlp.crpt.tech:9092
-      topic: "nanshakov3"
+    consumer:
+      bootstrap:
+        servers: docker01.dev.mdlp.crpt.tech:9092
+      group:
+        id: 1
+      auto-offset-reset: earliest
