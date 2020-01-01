@@ -4,8 +4,10 @@ import com.nanshakov.common.dto.PostWithMeta;
 
 public interface PostMetaRepository {
 
-    boolean contains(String hash);
+    boolean containsByUrl(String hash);
 
-    void add(PostWithMeta p);
+    boolean containsByContent(String hash);
+
+    int add(PostWithMeta p);
 
 }

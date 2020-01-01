@@ -53,7 +53,7 @@ public class Kafka {
         ConcurrentKafkaListenerContainerFactory<String, Post> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-        factory.setConcurrency(3);
+        //factory.setConcurrency(3);
         factory.getContainerProperties().setPollTimeout(3000);
         return factory;
     }

@@ -54,7 +54,7 @@ public class Ifunny extends BaseIntegrationImpl {
             }
             listNews.forEach(el -> {
                 Post post = parse(el);
-                String hash = calculateHash(post) + "3";
+                String hash = calculateHash(post) + "6";
                 if (!exist(hash)) {
                     sendToKafka(hash, post);
                 } else {
@@ -102,12 +102,12 @@ public class Ifunny extends BaseIntegrationImpl {
             String[] parts = dataSrc.split("/");
             //TODO [экстремальное программирование] хорошо бы как-то проверить что их и правда 5...
             String url = downloadUrl + parts[5];
-            return Post.builder()
-                    .url(url)
-                    .alt(alt)
-                    .from(getPlatform())
-                    .type(Type.PHOTO)
-                    .build();
+            Post p = new Post();
+            p.setUrl(url);
+            p.setAlt(alt);
+            p.setFrom(getPlatform());
+            p.setType(Type.PHOTO);
+            return p;
         }
         return null;
     }
