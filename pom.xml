@@ -10,7 +10,16 @@
                 <groupId>org.jsoup</groupId>
                 <version>1.12.1</version>
             </dependency>
-
+            <dependency>
+                <artifactId>minio</artifactId>
+                <groupId>io.minio</groupId>
+                <version>6.0.11</version>
+            </dependency>
+            <dependency>
+                <artifactId>clickhouse-jdbc</artifactId>
+                <groupId>ru.yandex.clickhouse</groupId>
+                <version>0.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <groupId>com.nanshakov</groupId>

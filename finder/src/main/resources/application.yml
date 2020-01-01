@@ -2,7 +2,11 @@
 type: IFUNNY
 token: ""
 tag: "deutsch"
-
+endpoint: "docker01.dev.mdlp.crpt.tech:9999"
+accessKey: "minioadmin"
+secretKey: "minioadmin"
+bucket: "nanshakov"
+port: 9999
 IFUNNY:
   download-url: "https://img.ifunny.co/images/"
 

@@ -58,7 +58,10 @@
 		<dependency>
 			<artifactId>clickhouse-jdbc</artifactId>
 			<groupId>ru.yandex.clickhouse</groupId>
-			<version>0.2</version>
+		</dependency>
+		<dependency>
+			<artifactId>minio</artifactId>
+			<groupId>io.minio</groupId>
 		</dependency>
 		<!--		<dependency>-->
 		<!--			<groupId>commons-io</groupId>-->
