@@ -61,6 +61,8 @@ public class Minio implements FileUploader {
             ErrorResponseException {
         InputStream is = new ByteArrayInputStream(bytes);
         //TODO add contentType by ext
+        //image/jpeg
+        //
         minioClient.putObject(bucketName, fileName, is, Long.valueOf(is.available()), null, null,
                 "application/octet-stream");
         is.close();

@@ -27,11 +27,6 @@ public class Ifunny extends BaseIntegrationImpl {
     @Value("${IFUNNY.download-url}")
     private String downloadUrl;
 
-//    @PostConstruct
-//    public void postConstruct() {
-//        if (type.equals(getPlatform().toString())) { start(); }
-//    }
-
     @Override
     public void start() throws InterruptedException {
         Thread.sleep(10000);
