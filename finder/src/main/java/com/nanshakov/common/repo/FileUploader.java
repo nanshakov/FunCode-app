@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
+import io.minio.errors.InvalidArgumentException;
 import io.minio.errors.InvalidBucketNameException;
 import io.minio.errors.InvalidResponseException;
 import io.minio.errors.NoResponseException;
@@ -20,5 +21,8 @@ public interface FileUploader {
             InsufficientDataException, InvalidResponseException, InternalException, NoResponseException,
             InvalidBucketNameException, XmlPullParserException, ErrorResponseException, RegionConflictException;
 
-    void putObject(String bucketName, String fileName, byte[] bytes);
+    void putObject(String bucketName, String fileName, byte[] bytes) throws IOException, XmlPullParserException,
+            NoSuchAlgorithmException, InvalidKeyException, InvalidArgumentException, InvalidResponseException,
+            InternalException, NoResponseException, InvalidBucketNameException, InsufficientDataException,
+            ErrorResponseException;
 }

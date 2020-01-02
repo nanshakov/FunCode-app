@@ -3,13 +3,14 @@ package com.nanshakov.processor;
 import com.nanshakov.common.Utils;
 import com.nanshakov.common.dto.Post;
 import com.nanshakov.common.dto.PostWithMeta;
+import com.nanshakov.common.repo.FileUploader;
 import com.nanshakov.common.repo.PostMetaRepository;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,10 @@ public class KafkaListener {
 //    private String kafkaGroupId;
     @Autowired
     private PostMetaRepository postMetaRepository;
+    @Autowired
+    private FileUploader fileUploader;
+    @Value("${bucket}")
+    private String bucket;
 
     @org.springframework.kafka.annotation.KafkaListener(topics = "${spring.kafka.topic}")
     public void consume(ConsumerRecord<String, Post> rawMessage) {
@@ -45,10 +50,10 @@ public class KafkaListener {
                             .dateTime(LocalDateTime.now())
                             .build();
                     p.applyPost(post);
+                    fileUploader.putObject(bucket, contentHash, p.getImg());
                     postMetaRepository.add(p);
-                    //TODO go to s3
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 log.error(e);
             }
         } else {

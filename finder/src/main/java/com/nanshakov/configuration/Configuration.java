@@ -16,7 +16,7 @@ public class Configuration {
     @Value("${endpoint}")
     private String endpoint;
     @Value("${port}")
-    private String port;
+    private int port;
     @Value("${accessKey}")
     private String accessKey;
     @Value("${secretKey}")

@@ -54,7 +54,7 @@ public class Ifunny extends BaseIntegrationImpl {
             }
             listNews.forEach(el -> {
                 Post post = parse(el);
-                String hash = calculateHash(post) + "6";
+                String hash = calculateHash(post) + "01";
                 if (!exist(hash)) {
                     sendToKafka(hash, post);
                 } else {

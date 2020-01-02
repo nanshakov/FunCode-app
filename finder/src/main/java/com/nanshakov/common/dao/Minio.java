@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
@@ -17,6 +18,7 @@ import io.minio.MinioClient;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
+import io.minio.errors.InvalidArgumentException;
 import io.minio.errors.InvalidBucketNameException;
 import io.minio.errors.InvalidResponseException;
 import io.minio.errors.NoResponseException;
@@ -32,7 +34,7 @@ public class Minio implements FileUploader {
     private final MinioClient minioClient;
 
     @Value("${bucket}")
-    private final String bucket;
+    private String bucket;
 
     @PostConstruct
     protected void postConstruct() throws IOException, XmlPullParserException, NoSuchAlgorithmException,
@@ -53,8 +55,13 @@ public class Minio implements FileUploader {
     }
 
     @Override
-    public void putObject(String bucketName, String fileName, byte[] bytes) {
-        InputStream is = new InputStream() { }
-        minioClient.putObject(bucketName, fileName, bytes);
+    public void putObject(String bucketName, String fileName, byte[] bytes) throws IOException, XmlPullParserException,
+            NoSuchAlgorithmException, InvalidKeyException, InvalidArgumentException, InvalidResponseException,
+            InternalException, NoResponseException, InvalidBucketNameException, InsufficientDataException,
+            ErrorResponseException {
+        InputStream is = new ByteArrayInputStream(bytes);
+        minioClient.putObject(bucketName, fileName, is, Long.valueOf(is.available()), null, null,
+                "application/octet-stream");
+        is.close();
     }
 }
