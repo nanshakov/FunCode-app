@@ -47,7 +47,7 @@ public class KafkaListener {
                 String contentHash = Utils.calculateHashSha256(img);
                 if (!postMetaRepository.containsByContent(contentHash)) {
                     String fname = contentHash + Utils.getExtension(post.getUrl());
-                    fileUploader.putObject(bucket, fileName, p.getImg());
+                    fileUploader.putObject(bucket, fname, img);
                     PostWithMeta p = PostWithMeta.builder()
                             .urlHash(hash)
                             .img(Utils.copyURLToByteArray(post.getUrl()))
