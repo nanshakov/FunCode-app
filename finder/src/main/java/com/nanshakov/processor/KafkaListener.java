@@ -27,6 +27,10 @@ public class KafkaListener {
     private PostMetaRepository postMetaRepository;
     @Autowired
     private FileUploader fileUploader;
+    @Value("${endpoint}")
+    private String endpoint;
+    @Value("${port}")
+    private int port;
     @Value("${bucket}")
     private String bucket;
 
@@ -42,15 +46,16 @@ public class KafkaListener {
                 byte[] img = Utils.copyURLToByteArray(post.getUrl());
                 String contentHash = Utils.calculateHashSha256(img);
                 if (!postMetaRepository.containsByContent(contentHash)) {
+                    String fname = contentHash + Utils.getExtension(post.getUrl());
+                    fileUploader.putObject(bucket, fileName, p.getImg());
                     PostWithMeta p = PostWithMeta.builder()
                             .urlHash(hash)
                             .img(Utils.copyURLToByteArray(post.getUrl()))
                             .contentHash(Utils.calculateHashSha256(img))
-                            .pathToContent("")
+                            .pathToContent(constructUrl(fname))
                             .dateTime(LocalDateTime.now())
                             .build();
                     p.applyPost(post);
-                    fileUploader.putObject(bucket, contentHash, p.getImg());
                     postMetaRepository.add(p);
                 }
             } catch (Exception e) {
@@ -60,6 +65,10 @@ public class KafkaListener {
             log.trace("{} found in clickhouse, do nothing", rawMessage.key());
         }
 
+    }
+
+    private String constructUrl(String fname) {
+        return endpoint + ":" + port + "/" + bucket + "/" + fname;
     }
 
 }

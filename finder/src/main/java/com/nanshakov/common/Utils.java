@@ -6,6 +6,7 @@ import org.apache.http.client.fluent.Request;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.regex.Pattern;
 
 import lombok.experimental.UtilityClass;
 
@@ -15,6 +16,11 @@ public class Utils {
     public byte[] copyURLToByteArray(final String urlStr)
             throws IOException {
         return copyURLToByteArray(urlStr, 5000, 5000);
+    }
+
+    public String getExtension(String urlStr) {
+        String[] split = urlStr.split(Pattern.quote("."));
+        return "." + split[split.length - 1];
     }
 
     public byte[] copyURLToByteArray(

@@ -60,6 +60,7 @@ public class Minio implements FileUploader {
             InternalException, NoResponseException, InvalidBucketNameException, InsufficientDataException,
             ErrorResponseException {
         InputStream is = new ByteArrayInputStream(bytes);
+        //TODO add contentType by ext
         minioClient.putObject(bucketName, fileName, is, Long.valueOf(is.available()), null, null,
                 "application/octet-stream");
         is.close();
