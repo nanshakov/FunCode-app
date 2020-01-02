@@ -35,6 +35,9 @@ public class KafkaListener {
     private String bucket;
 
     @org.springframework.kafka.annotation.KafkaListener(topics = "${spring.kafka.topic}")
+    //Реализуем логику двойной проверки
+    //1 по url, на случай если воркер получил то что уже есть в метаданных. Это легкая проверка, без скачивания
+    //2 по хешу контента
     public void consume(ConsumerRecord<String, Post> rawMessage) {
         log.info("=> consumed {}", rawMessage.value());
         String hash = rawMessage.key();

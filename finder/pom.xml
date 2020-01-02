@@ -63,6 +63,15 @@
 			<artifactId>minio</artifactId>
 			<groupId>io.minio</groupId>
 		</dependency>
+		<dependency>
+			<artifactId>twitter4j-core</artifactId>
+			<groupId>org.twitter4j</groupId>
+		</dependency>
+		<dependency>
+			<artifactId>JRAW</artifactId>
+			<groupId>net.dean.jraw</groupId>
+			<version>1.1.0</version>
+		</dependency>
 		<!--		<dependency>-->
 		<!--			<groupId>commons-io</groupId>-->
 		<!--			<artifactId>commons-io</artifactId>-->
