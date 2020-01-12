@@ -2,7 +2,6 @@ package com.nanshakov.processor;
 
 import com.nanshakov.common.Utils;
 import com.nanshakov.common.dto.Post;
-import com.nanshakov.common.dto.PostWithMeta;
 import com.nanshakov.common.repo.FileUploader;
 import com.nanshakov.common.repo.PostMetaRepository;
 
@@ -44,22 +43,19 @@ public class KafkaListener {
         Post post = rawMessage.value();
         //simple hash by url
         if (!postMetaRepository.containsByUrl(hash)) {
-            log.info("Downloading...{}", post.getUrl());
+            log.info("Downloading...{}", post.getImgUrl());
             try {
-                byte[] img = Utils.copyURLToByteArray(post.getUrl());
+                byte[] img = Utils.copyURLToByteArray(post.getImgUrl());
                 String contentHash = Utils.calculateHashSha256(img);
                 if (!postMetaRepository.containsByContent(contentHash)) {
-                    String fname = contentHash + Utils.getExtension(post.getUrl());
+                    String fname = contentHash + Utils.getExtension(post.getImgUrl());
                     fileUploader.putObject(bucket, fname, img);
-                    PostWithMeta p = PostWithMeta.builder()
-                            .urlHash(hash)
-                            .img(Utils.copyURLToByteArray(post.getUrl()))
-                            .contentHash(Utils.calculateHashSha256(img))
-                            .pathToContent(constructUrl(fname))
-                            .dateTime(LocalDateTime.now())
-                            .build();
-                    p.applyPost(post);
-                    postMetaRepository.add(p);
+                    post.setUrlHash(hash);
+                    post.setImg(Utils.copyURLToByteArray(post.getImgUrl()));
+                    post.setContentHash(Utils.calculateHashSha256(img));
+                    post.setPathToContent(constructUrl(fname));
+                    post.setDateTime(LocalDateTime.now());
+                    postMetaRepository.add(post);
                 }
             } catch (Exception e) {
                 log.error(e);

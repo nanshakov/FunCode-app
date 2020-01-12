@@ -1,6 +1,6 @@
 package com.nanshakov.common.repo;
 
-import com.nanshakov.common.dto.PostWithMeta;
+import com.nanshakov.common.dto.Post;
 
 public interface PostMetaRepository {
 
@@ -8,6 +8,6 @@ public interface PostMetaRepository {
 
     boolean containsByContent(String hash);
 
-    int add(PostWithMeta p);
+    int add(Post p);
 
 }

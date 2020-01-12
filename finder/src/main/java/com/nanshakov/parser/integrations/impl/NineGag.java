@@ -102,7 +102,16 @@ public class NineGag extends BaseIntegrationImpl {
         p.setAlt(el.getTitle());
         p.setFrom(getPlatform());
         p.setType(Type.PHOTO);
-        return p;
+        return Post.builder()
+                .url(el.getUrl())
+                .imgUrl(el.getImages().getImage700().getUrl())
+                .alt(el.getTitle())
+                .from(getPlatform())
+                .type(Type.PHOTO)
+                .likes(el.getUpVoteCount())
+                .dislikes(el.getDownVoteCount())
+                .comments(el.getCommentsCount())
+                .build();
     }
 
     void printBaseInfo() {
