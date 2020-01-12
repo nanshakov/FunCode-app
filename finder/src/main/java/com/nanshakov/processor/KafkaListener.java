@@ -65,7 +65,7 @@ public class KafkaListener {
                 log.error(e);
             }
         } else {
-            log.trace("{} found in clickhouse, do nothing", rawMessage.key());
+            log.info("{} found in clickhouse, do nothing", rawMessage.key());
         }
 
     }

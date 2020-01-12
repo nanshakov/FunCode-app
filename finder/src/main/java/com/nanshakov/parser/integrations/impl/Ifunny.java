@@ -29,7 +29,7 @@ public class Ifunny extends BaseIntegrationImpl {
 
     @Override
     public void start() throws InterruptedException {
-        Thread.sleep(10000);
+        Thread.sleep(1000);
         if (!type.equals(getPlatform().toString())) { return; }
         printBaseInfo();
         log.info("Started...");

@@ -1,5 +1,5 @@
 #Ifunny
-type: IFUNNY
+type: NineGag
 token: ""
 tag: "deutsch"
 endpoint: "http://docker01.dev.mdlp.crpt.tech"
