@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -54,7 +52,6 @@ public class KafkaListener {
                     post.setImg(Utils.copyURLToByteArray(post.getImgUrl()));
                     post.setContentHash(Utils.calculateHashSha256(img));
                     post.setPathToContent(constructUrl(fname));
-                    post.setDateTime(LocalDateTime.now());
                     postMetaRepository.add(post);
                 }
             } catch (Exception e) {

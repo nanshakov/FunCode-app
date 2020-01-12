@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 import javax.validation.constraints.Null;
@@ -111,7 +113,8 @@ public class NineGag extends BaseIntegrationImpl {
                 .likes(el.getUpVoteCount())
                 .dislikes(el.getDownVoteCount())
                 .comments(el.getCommentsCount())
-                .build();
+                .dateTime(new Date((new Timestamp(Long.valueOf(el.getCreationTs()))))
+                        .build();
     }
 
     void printBaseInfo() {
