@@ -37,26 +37,27 @@ public class NineGag extends BaseIntegrationImpl {
         if (!type.equals(getPlatform().toString())) { return; }
         printBaseInfo();
         log.info("Started...");
-        while (true) {
-            NineGagDto rawPosts = getPage();
-            if (rawPosts == null) {
-                continue;
-            }
-            //получаем новые id
-            if (rawPosts.getData().getNextCursor() == null) {
-                break;
-            }
-            nextId = extractId(rawPosts.getData().getNextCursor());
-            rawPosts.getData().getPosts().forEach(el -> {
-                Post post = parse(el);
-                String hash = calculateHash(post);
-                if (!exist(hash)) {
-                    sendToKafka(hash, post);
-                } else {
-                    log.info("Post {} with hash {} found in redis, do nothing", post, hash);
-                }
-            });
-        }
+//        while (true) {
+//            NineGagDto rawPosts = getPage();
+//            if (rawPosts == null) {
+//                continue;
+//            }
+//            //получаем новые id
+//            if (rawPosts.getData().getNextCursor() == null) {
+//                break;
+//            }
+//            nextId = extractId(rawPosts.getData().getNextCursor());
+//            rawPosts.getData().getPosts().forEach(el -> {
+//                Post post = parse(el);
+//                total.inc();
+//                String hash = calculateHash(post);
+//                if (!exist(hash)) {
+//                    sendToKafka(hash, post);
+//                } else {
+//                    log.info("Post {} with hash {} found in redis, do nothing", post, hash);
+//                }
+//            });
+//        }
     }
 
     @Override
@@ -75,6 +76,7 @@ public class NineGag extends BaseIntegrationImpl {
             return objectMapper.readValue(call(url.toString()), NineGagDto.class);
         } catch (IOException e) {
             log.error(e);
+            errors.inc();
             nextId += 10;
         }
         return null;

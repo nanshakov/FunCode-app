@@ -23,7 +23,7 @@ spring:
     host: docker01.dev.mdlp.crpt.tech
     port: 6379
   kafka:
-    topic: "nanshakov6"
+    topic: "nanshakov7"
     producer:
       bootstrap:
         servers: docker01.dev.mdlp.crpt.tech:9092
@@ -33,3 +33,17 @@ spring:
       group:
         id: 1
       auto-offset-reset: earliest
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoint:
+    prometheus:
+      enabled: true
+    metrics:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'

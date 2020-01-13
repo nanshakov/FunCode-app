@@ -19,7 +19,7 @@ public class FinderApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(FinderApplication.class)
-                .web(WebApplicationType.NONE)
+                .web(WebApplicationType.SERVLET)
                 .run(args);
     }
 

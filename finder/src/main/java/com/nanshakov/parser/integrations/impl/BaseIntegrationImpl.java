@@ -27,6 +27,10 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
     private String topic;
     @Autowired
     private ApplicationContext ctx;
+    static final io.prometheus.client.Counter total = io.prometheus.client.Counter.build()
+            .name("parse_total").help("Total parsed.").register();
+    static final io.prometheus.client.Counter errors = io.prometheus.client.Counter.build()
+            .name("error_total").help("Total errors.").register();
 
     @SuppressWarnings("ConstantConditions")
     public boolean exist(String hash) {
