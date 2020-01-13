@@ -1,17 +1,13 @@
 #Ifunny
 type: NineGag
-token: ""
-tag: "deutsch"
-endpoint: "http://docker01.dev.mdlp.crpt.tech"
-accessKey: "minioadmin"
-secretKey: "minioadmin"
-bucket: "nanshakov"
-port: 9999
-logging:
-  level:
-    io.minio: debug
+
 IFUNNY:
   download-url: "https://img.ifunny.co/images/"
+  tags: "deutsch"
+
+NineGag:
+  tags: "deutsch"
+  recursion: true
 
 spring:
   datasource:
@@ -34,6 +30,7 @@ spring:
         id: 1
       auto-offset-reset: earliest
 
+#metrics
 management:
   metrics:
     export:
@@ -52,3 +49,17 @@ management:
 endpoints:
   prometheus:
     enabled: true
+
+#s3
+s3.endpoint: "http://docker01.dev.mdlp.crpt.tech"
+s3.accessKey: "minioadmin"
+s3.secretKey: "minioadmin"
+s3.bucket: "nanshakov"
+s3.port: 9999
+
+#loggers
+logging:
+  level:
+    io.minio: debug
+
+schema: "metaV2"

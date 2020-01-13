@@ -22,8 +22,8 @@ import lombok.extern.log4j.Log4j2;
 public class Ifunny extends BaseIntegrationImpl {
 
     private String nextId = "1567508062";
-    @Value("${tag}")
-    private String tag;
+    @Value("${IFUNNY.tags}")
+    private String tags;
     @Value("${IFUNNY.download-url}")
     private String downloadUrl;
 
@@ -70,7 +70,7 @@ public class Ifunny extends BaseIntegrationImpl {
         try {
             StringBuilder url = new StringBuilder();
             url.append("https://ifunny.co/api/tags/")
-                    .append(tag)
+                    .append(tags)
                     .append("/")
                     .append(nextId)
                     .append("?page=")
@@ -100,7 +100,8 @@ public class Ifunny extends BaseIntegrationImpl {
             //TODO [экстремальное программирование] хорошо бы как-то проверить что их и правда 5...
             String url = downloadUrl + parts[5];
             Post p = new Post();
-            p.setUrl(url);
+            p.setImgUrl(url);
+            p.setUrl("");
             p.setAlt(alt);
             p.setFrom(getPlatform());
             p.setType(Type.PHOTO);
@@ -112,6 +113,6 @@ public class Ifunny extends BaseIntegrationImpl {
     void printBaseInfo() {
         log.info(new StringBuilder()
                 .append("Module : ").append(getPlatform()).append("\n")
-                .append("Tags : ").append(tag));
+                .append("Tags : ").append(tags));
     }
 }

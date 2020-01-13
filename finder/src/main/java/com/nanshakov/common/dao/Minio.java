@@ -33,7 +33,7 @@ public class Minio implements FileUploader {
 
     private final MinioClient minioClient;
 
-    @Value("${bucket}")
+    @Value("${s3.bucket}")
     private String bucket;
 
     @PostConstruct

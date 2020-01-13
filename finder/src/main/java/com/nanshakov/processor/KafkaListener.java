@@ -24,11 +24,11 @@ public class KafkaListener {
     private PostMetaRepository postMetaRepository;
     @Autowired
     private FileUploader fileUploader;
-    @Value("${endpoint}")
+    @Value("${s3.endpoint}")
     private String endpoint;
-    @Value("${port}")
+    @Value("${s3.port}")
     private int port;
-    @Value("${bucket}")
+    @Value("${s3.bucket}")
     private String bucket;
 
     private Counter totalProcessed

@@ -1,10 +1,10 @@
 package com.nanshakov.parser.integrations.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nanshakov.common.dto.NineGagDto;
 import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.Post;
 import com.nanshakov.common.dto.Type;
-import com.nanshakov.common.dto.ninegag.NineGagDto;
 
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +26,10 @@ public class NineGag extends BaseIntegrationImpl {
     @Autowired
     ObjectMapper objectMapper;
     private int nextId = 10;
-    @Value("${tag}")
-    private String tag;
-    @Value("${IFUNNY.download-url}")
-    private String downloadUrl;
+    @Value("${NineGag.tags}")
+    private String tags;
+    @Value("${NineGag.recursion}")
+    private boolean recursion;
 
     @Override
     public void start() throws InterruptedException {
@@ -70,7 +70,7 @@ public class NineGag extends BaseIntegrationImpl {
         try {
             StringBuilder url = new StringBuilder();
             url.append("https://9gag.com/v1/search-posts?query=")
-                    .append(tag)
+                    .append(tags)
                     .append("&c=")
                     .append(nextId);
             return objectMapper.readValue(call(url.toString()), NineGagDto.class);
@@ -103,13 +103,13 @@ public class NineGag extends BaseIntegrationImpl {
                 .dislikes(el.getDownVoteCount())
                 .comments(el.getCommentsCount())
                 .dateTime(new Timestamp(Long.valueOf(el.getCreationTs()) * 1000).toLocalDateTime())
-                        .build();
+                .build();
     }
 
     void printBaseInfo() {
         log.info(new StringBuilder()
                 .append("Module : ").append(getPlatform()).append("\n")
-                .append("Tags : ").append(tag));
+                .append("Tags : ").append(tags));
     }
 
     @Null

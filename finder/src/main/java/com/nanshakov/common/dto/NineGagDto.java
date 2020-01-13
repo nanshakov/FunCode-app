@@ -1,4 +1,4 @@
-package com.nanshakov.common.dto.ninegag;
+package com.nanshakov.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -13,13 +13,13 @@ import io.minio.errors.InvalidPortException;
 @Import({Jedis.class, Kafka.class})
 public class Configuration {
 
-    @Value("${endpoint}")
+    @Value("${s3.endpoint}")
     private String endpoint;
-    @Value("${port}")
+    @Value("${s3.port}")
     private int port;
-    @Value("${accessKey}")
+    @Value("${s3.accessKey}")
     private String accessKey;
-    @Value("${secretKey}")
+    @Value("${s3.secretKey}")
     private String secretKey;
 
     @Bean
