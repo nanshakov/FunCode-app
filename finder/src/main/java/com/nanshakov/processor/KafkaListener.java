@@ -18,8 +18,6 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class KafkaListener {
 
-    //    @Value("${spring.kafka.consumer.group.id}")
-//    private String kafkaGroupId;
     @Autowired
     private PostMetaRepository postMetaRepository;
     @Autowired

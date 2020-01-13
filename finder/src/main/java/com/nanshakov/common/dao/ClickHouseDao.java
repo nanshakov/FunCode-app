@@ -1,6 +1,6 @@
 package com.nanshakov.common.dao;
 
-import com.nanshakov.common.dto.PostWithMeta;
+import com.nanshakov.common.dto.Post;
 import com.nanshakov.common.repo.PostMetaRepository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,11 +38,11 @@ public class ClickHouseDao implements PostMetaRepository {
     }
 
     @Override
-    public int add(PostWithMeta p) {
+    public int add(Post p) {
         log.info("Saving to DB {}", p);
         SimpleJdbcInsert simpleJdbcInsert =
                 new SimpleJdbcInsert(jdbcTemplate).withTableName("meta");
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("urlhash", p.getUrlHash());
         parameters.put("contenthash", p.getContentHash());
         parameters.put("source", p.getFrom());
