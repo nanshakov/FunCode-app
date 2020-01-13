@@ -12,6 +12,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -27,10 +29,9 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
     private String topic;
     @Autowired
     private ApplicationContext ctx;
-    static final io.prometheus.client.Counter total = io.prometheus.client.Counter.build()
-            .name("parse_total").help("Total parsed.").register();
-    static final io.prometheus.client.Counter errors = io.prometheus.client.Counter.build()
-            .name("error_total").help("Total errors.").register();
+
+    Counter total = Metrics.counter("parse.total", "parse", "total");
+    Counter errors = Metrics.counter("parse.error", "parse", "error");
 
     @SuppressWarnings("ConstantConditions")
     public boolean exist(String hash) {

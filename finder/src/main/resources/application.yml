@@ -33,6 +33,7 @@ spring:
       group:
         id: 1
       auto-offset-reset: earliest
+
 management:
   metrics:
     export:
@@ -47,3 +48,7 @@ management:
     web:
       exposure:
         include: '*'
+
+endpoints:
+  prometheus:
+    enabled: true

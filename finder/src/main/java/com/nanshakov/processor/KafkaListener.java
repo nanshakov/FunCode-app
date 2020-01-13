@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import io.prometheus.client.Counter;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -29,12 +30,13 @@ public class KafkaListener {
     private int port;
     @Value("${bucket}")
     private String bucket;
-    static final Counter totalProcessed = Counter.build()
-            .name("total_processed").help("Total processed objects.").register();
-    static final Counter duplicates = Counter.build()
-            .name("duplicates").help("Total duplicates.").register();
-    static final Counter processingErrors = Counter.build()
-            .name("processing_errors").help("Processing errors.").register();
+
+    private Counter totalProcessed
+            = Metrics.counter("process.total", "process", "total");
+    private Counter duplicates
+            = Metrics.counter("process.duplicates", "process", "duplicates");
+    private Counter processingErrors
+            = Metrics.counter("process.error", "process", "error");
 
     @org.springframework.kafka.annotation.KafkaListener(topics = "${spring.kafka.topic}")
     //Реализуем логику двойной проверки
@@ -57,17 +59,17 @@ public class KafkaListener {
                     post.setImg(Utils.copyURLToByteArray(post.getImgUrl()));
                     post.setContentHash(Utils.calculateHashSha256(img));
                     post.setPathToContent(constructUrl(fname));
-                    totalProcessed.inc();
+                    totalProcessed.increment();
                     postMetaRepository.add(post);
                 } else {
-                    duplicates.inc();
+                    duplicates.increment();
                 }
             } catch (Exception e) {
-                processingErrors.inc();
+                processingErrors.increment();
                 log.error(e);
             }
         } else {
-            duplicates.inc();
+            duplicates.increment();
             log.info("{} found in clickhouse, do nothing", rawMessage.key());
         }
 

@@ -49,7 +49,7 @@ public class Ifunny extends BaseIntegrationImpl {
             }
             listNews.forEach(el -> {
                 Post post = parse(el);
-                total.inc();
+                total.increment();
                 String hash = calculateHash(post) + "02";
                 if (!exist(hash)) {
                     sendToKafka(hash, post);
@@ -77,7 +77,7 @@ public class Ifunny extends BaseIntegrationImpl {
                     .append(pageNum);
             return call(url.toString());
         } catch (IOException e) {
-            errors.inc();
+            errors.increment();
             log.error(e);
         }
         return null;

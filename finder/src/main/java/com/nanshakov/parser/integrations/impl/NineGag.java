@@ -76,7 +76,7 @@ public class NineGag extends BaseIntegrationImpl {
             return objectMapper.readValue(call(url.toString()), NineGagDto.class);
         } catch (IOException e) {
             log.error(e);
-            errors.inc();
+            errors.increment();
             nextId += 10;
         }
         return null;
