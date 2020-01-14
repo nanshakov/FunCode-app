@@ -13,7 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Post implements Serializable {
+public class PostDto implements Serializable {
 
     @ToString.Exclude
     byte[] img;

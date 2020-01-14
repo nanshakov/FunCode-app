@@ -1,6 +1,6 @@
 package com.nanshakov.common.dao;
 
-import com.nanshakov.common.dto.Post;
+import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.repo.PostMetaRepository;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +41,7 @@ public class ClickHouseDao implements PostMetaRepository {
     }
 
     @Override
-    public int add(Post p) {
+    public int add(PostDto p) {
         log.info("Saving to DB {}", p);
         SimpleJdbcInsert simpleJdbcInsert =
                 new SimpleJdbcInsert(jdbcTemplate).withTableName("meta");

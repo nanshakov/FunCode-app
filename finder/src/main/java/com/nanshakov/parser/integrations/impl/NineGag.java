@@ -3,7 +3,7 @@ package com.nanshakov.parser.integrations.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nanshakov.common.dto.NineGagDto;
 import com.nanshakov.common.dto.Platform;
-import com.nanshakov.common.dto.Post;
+import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
 
 import org.jsoup.Jsoup;
@@ -30,34 +30,41 @@ public class NineGag extends BaseIntegrationImpl {
     private String tags;
     @Value("${NineGag.recursion}")
     private boolean recursion;
+    @Value("${NineGag.download-url}")
+    private String downloadUrl;
+    private String currentTag;
 
     @Override
     public void start() throws InterruptedException {
         Thread.sleep(1000);
+        currentTag = tags;
         if (!type.equals(getPlatform().toString())) { return; }
         printBaseInfo();
         log.info("Started...");
-//        while (true) {
-//            NineGagDto rawPosts = getPage();
-//            if (rawPosts == null) {
-//                continue;
-//            }
-//            //получаем новые id
-//            if (rawPosts.getData().getNextCursor() == null) {
-//                break;
-//            }
-//            nextId = extractId(rawPosts.getData().getNextCursor());
-//            rawPosts.getData().getPosts().forEach(el -> {
-//                Post post = parse(el);
-//                total.inc();
-//                String hash = calculateHash(post);
-//                if (!exist(hash)) {
-//                    sendToKafka(hash, post);
-//                } else {
-//                    log.info("Post {} with hash {} found in redis, do nothing", post, hash);
-//                }
-//            });
-//        }
+        while (true) {
+            NineGagDto rawPosts = getPage();
+            if (rawPosts == null) {
+                continue;
+            }
+            //получаем новые id
+            if (rawPosts.getData().getNextCursor() == null) {
+                break;
+            }
+            nextId = extractId(rawPosts.getData().getNextCursor());
+            rawPosts.getData().getPosts().forEach(el -> {
+                el.getTags().forEach(t -> tagsService.addTag(t.getKey()));
+                PostDto post = parse(el);
+                String hash = calculateHash(post);
+                total.increment();
+                if (!existInRedis(hash)) {
+                    sendToKafka(hash, post);
+                } else {
+                    log.info("Post {} with hash {} found in redis, do nothing", post, hash);
+                    duplicates.increment();
+                    tagsService.markTagAsProcessed(currentTag);
+                }
+            });
+        }
     }
 
     @Override
@@ -69,7 +76,7 @@ public class NineGag extends BaseIntegrationImpl {
     private NineGagDto getPage() {
         try {
             StringBuilder url = new StringBuilder();
-            url.append("https://9gag.com/v1/search-posts?query=")
+            url.append(downloadUrl)
                     .append(tags)
                     .append("&c=")
                     .append(nextId);
@@ -92,8 +99,8 @@ public class NineGag extends BaseIntegrationImpl {
     }
 
     @Null
-    private Post parse(NineGagDto.Post el) {
-        return Post.builder()
+    private PostDto parse(NineGagDto.Post el) {
+        return PostDto.builder()
                 .url(el.getUrl())
                 .imgUrl(el.getImages().getImage700().getUrl())
                 .alt(el.getTitle())

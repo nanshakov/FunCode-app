@@ -6,6 +6,7 @@ IFUNNY:
   tags: "deutsch"
 
 NineGag:
+  download-url: "https://9gag.com/v1/search-posts?query="
   tags: "deutsch"
   recursion: true
 

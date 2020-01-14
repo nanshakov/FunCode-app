@@ -1,7 +1,7 @@
 package com.nanshakov.processor;
 
 import com.nanshakov.common.Utils;
-import com.nanshakov.common.dto.Post;
+import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.repo.FileUploader;
 import com.nanshakov.common.repo.PostMetaRepository;
 
@@ -42,10 +42,10 @@ public class KafkaListener {
     //Реализуем логику двойной проверки
     //1 по url, на случай если воркер получил то что уже есть в метаданных. Это легкая проверка, без скачивания
     //2 по хешу контента
-    public void consume(ConsumerRecord<String, Post> rawMessage) {
+    public void consume(ConsumerRecord<String, PostDto> rawMessage) {
         log.info("=> consumed {}", rawMessage.value());
         String hash = rawMessage.key();
-        Post post = rawMessage.value();
+        PostDto post = rawMessage.value();
         //simple hash by url
         if (!postMetaRepository.containsByUrl(hash)) {
             log.info("Downloading...{}", post.getImgUrl());

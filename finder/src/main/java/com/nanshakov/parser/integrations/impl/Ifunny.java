@@ -1,7 +1,7 @@
 package com.nanshakov.parser.integrations.impl;
 
 import com.nanshakov.common.dto.Platform;
-import com.nanshakov.common.dto.Post;
+import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
 
 import org.jsoup.Jsoup;
@@ -48,13 +48,14 @@ public class Ifunny extends BaseIntegrationImpl {
                 break;
             }
             listNews.forEach(el -> {
-                Post post = parse(el);
+                PostDto post = parse(el);
                 total.increment();
                 String hash = calculateHash(post) + "02";
-                if (!exist(hash)) {
+                if (!existInRedis(hash)) {
                     sendToKafka(hash, post);
                 } else {
                     log.trace("Post {} with hash {} found in redis, do nothing", post, hash);
+                    duplicates.increment();
                 }
             });
         }
@@ -92,14 +93,14 @@ public class Ifunny extends BaseIntegrationImpl {
     }
 
     @Null
-    private Post parse(Element el) {
+    private PostDto parse(Element el) {
         String dataSrc = el.attr("data-src");
         if (dataSrc != null && !dataSrc.isEmpty()) {
             String alt = el.attr("alt");
             String[] parts = dataSrc.split("/");
             //TODO [экстремальное программирование] хорошо бы как-то проверить что их и правда 5...
             String url = downloadUrl + parts[5];
-            Post p = new Post();
+            PostDto p = new PostDto();
             p.setImgUrl(url);
             p.setUrl("");
             p.setAlt(alt);

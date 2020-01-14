@@ -96,7 +96,7 @@ public class NineGagDto {
     }
 
     @lombok.Data
-    static class Tag {
+    public static class Tag {
 
         @JsonProperty("key")
         private String key;

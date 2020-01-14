@@ -1,6 +1,6 @@
 package com.nanshakov.configuration;
 
-import com.nanshakov.common.dto.Post;
+import com.nanshakov.common.dto.PostDto;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -34,7 +34,7 @@ public class Kafka {
     private String kafkaGroupId;
 
     @Bean
-    public ProducerFactory<String, Post> producerFactory() {
+    public ProducerFactory<String, PostDto> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -43,14 +43,14 @@ public class Kafka {
     }
 
     @Bean
-    public KafkaTemplate<String, Post> kafkaTemplate() {
+    public KafkaTemplate<String, PostDto> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
     @Bean
-    KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Post>>
+    KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, PostDto>>
     kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, Post> factory =
+        ConcurrentKafkaListenerContainerFactory<String, PostDto> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         //factory.setConcurrency(3);
@@ -59,7 +59,7 @@ public class Kafka {
     }
 
     @Bean
-    public ConsumerFactory<String, Post> consumerFactory() {
+    public ConsumerFactory<String, PostDto> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerConfigs());
     }
 
