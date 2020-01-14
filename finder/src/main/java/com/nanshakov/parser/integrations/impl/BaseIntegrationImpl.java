@@ -5,7 +5,9 @@ import com.nanshakov.common.Utils;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.configuration.Status;
 import com.nanshakov.parser.integrations.BaseIntegration;
-
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -15,10 +17,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Metrics;
-import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public abstract class BaseIntegrationImpl implements BaseIntegration {
@@ -51,7 +49,7 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
     }
 
     void sendToKafka(String hash, PostDto p) {
-        kafkaTemplate.send(topic, hash, p);
+        //kafkaTemplate.send(topic, hash, p);
     }
 
     public String calculateHash(Object o) {

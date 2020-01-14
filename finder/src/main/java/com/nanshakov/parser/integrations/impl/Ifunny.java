@@ -28,7 +28,7 @@ public class Ifunny extends BaseIntegrationImpl {
     @SneakyThrows
     @Override
     public void run() {
-        Thread.sleep(1000);
+        //Thread.sleep(1000);
         if (!type.equals(getPlatform().toString())) { return; }
         printBaseInfo();
         log.info("Started...");
@@ -39,17 +39,18 @@ public class Ifunny extends BaseIntegrationImpl {
                 close();
                 return;
             }
-            Elements listNews = doc.select("img");
             //получаем новые id
             if (doc.selectFirst("li[data-next]") != null) {
                 nextId = doc.selectFirst("li[data-next]").attr("data-next");
             } else {
                 break;
             }
+            Elements listNews = doc.select(".post__toolbar");
+            //Elements listNews = doc.select("img");
             listNews.forEach(el -> {
                 PostDto post = parse(el);
                 total.increment();
-                String hash = calculateHash(post) + "02";
+                String hash = calculateHash(post);
                 if (!existInRedis(hash)) {
                     sendToKafka(hash, post);
                 } else {
