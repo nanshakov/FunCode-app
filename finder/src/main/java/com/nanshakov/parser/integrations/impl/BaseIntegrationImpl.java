@@ -36,6 +36,7 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
 
     Counter total = Metrics.counter("parse.total", "parse", "total");
     Counter errors = Metrics.counter("parse.error", "parse", "error");
+    Counter drop = Metrics.counter("parse.drop", "parse", "drop");
     @Autowired
     private KafkaTemplate<String, PostDto> kafkaTemplate;
 

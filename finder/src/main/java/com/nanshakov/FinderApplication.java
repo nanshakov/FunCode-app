@@ -1,8 +1,6 @@
 package com.nanshakov;
 
 
-import com.nanshakov.lib.src.cue.lang.stop.StopWords;
-import com.nanshakov.lib.src.cue.lang.unicode.BlockUtil;
 import com.nanshakov.parser.integrations.BaseIntegration;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +28,6 @@ public class FinderApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println(BlockUtil.guessUnicodeBlock("Fremd im eigenen land"));
-        System.out.println(StopWords.German.isStopWord("im"));
-
         for (BaseIntegration integration : integrations) {
             taskExecutor.execute(integration);
         }

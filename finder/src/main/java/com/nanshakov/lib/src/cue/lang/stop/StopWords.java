@@ -25,21 +25,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Jonathan Feinberg <jdf@us.ibm.com>
  */
 public enum StopWords {
-    Arabic(), Armenian(), Catalan(true), Croatian(), Czech(), Dutch(), //
-    Danish(), English(), Esperanto(), Farsi(), Finnish(), //
-    French(true), German(), Greek(), Hindi(), Hungarian(), //
-    Italian(), Latin(), Norwegian(), Polish(), Portuguese(), //
-    Romanian(), Russian(), Slovenian(), Slovak(), Spanish(), //
-    Swedish(), Hebrew(), Turkish(), Custom();
+    English(), German();
 
     public final boolean stripApostrophes;
     private final Set<String> stopwords = new HashSet<String>();
@@ -84,13 +82,20 @@ public enum StopWords {
             return true;
         }
         // check rightquotes as apostrophes
-        return stopwords.contains(s.replace('\u2019', '\'').toLowerCase(Locale.ENGLISH));
+        String temp = s.replace('\u2019', '\'').toLowerCase(Locale.ENGLISH);
+        List<String> split = Arrays.stream(temp.split(" ")).collect(Collectors.toList());
+        for (String str : split) {
+            if (stopwords.contains(str)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void loadLanguage() {
         final String wordlistResource = name().toLowerCase(Locale.ENGLISH);
         if (!wordlistResource.equals("custom")) {
-            readStopWords(getClass().getResourceAsStream(wordlistResource),
+            readStopWords(StopWords.class.getResourceAsStream("/stop/" + wordlistResource),
                     StandardCharsets.UTF_8);
         }
     }

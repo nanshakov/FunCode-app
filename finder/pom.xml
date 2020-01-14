@@ -1,20 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>finder</artifactId>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources</directory>
+                                    <includes>
+                                        <include>**/*.*</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <id>copy-resources</id>
+                        <phase>process-classes</phase>
+                    </execution>
+                </executions>
+                <version>2.6</version>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <artifactId>spring-boot-starter-web</artifactId>
             <groupId>org.springframework.boot</groupId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
+            <groupId>org.springframework.kafka</groupId>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <groupId>org.projectlombok</groupId>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -36,15 +63,15 @@
             <version>3.9</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.junit.vintage</groupId>
                     <artifactId>junit-vintage-engine</artifactId>
+                    <groupId>org.junit.vintage</groupId>
                 </exclusion>
             </exclusions>
+            <groupId>org.springframework.boot</groupId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -95,40 +122,20 @@
             <groupId>io.micrometer</groupId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka-test</artifactId>
+            <groupId>org.springframework.kafka</groupId>
             <scope>test</scope>
-        </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>junit</groupId>-->
-        <!--            <artifactId>junit</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
         </dependency>
     </dependencies>
-    <name>finder</name>
     <description>Demo project for Spring Boot</description>
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>finder</name>
 
     <parent>
         <artifactId>FunCode-app</artifactId>
         <groupId>com.nanshakov</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-
     <version>1.0-SNAPSHOT</version>
-
 </project>

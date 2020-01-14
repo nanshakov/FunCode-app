@@ -7,6 +7,8 @@ import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import com.nanshakov.lib.src.cue.lang.stop.StopWords;
+
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,12 +57,20 @@ public class NineGag extends BaseIntegrationImpl {
                 getAndApplyNextTag();
             }
             nextId = extractId(rawPosts.getData().getNextCursor());
-            rawPosts.getData().getPosts().forEach(el -> {
+            for (NineGagDto.Post p : rawPosts.getData().getPosts()) {
                 if (IsRecursionModeEnable) {
-                    List<String> tags = el.getTags().stream().map(NineGagDto.Tag::getKey).collect(Collectors.toList());
+                    List<String> tags = p.getTags().stream().map(NineGagDto.Tag::getKey).collect(Collectors.toList());
                     tagsService.addTags(tags);
                 }
-                PostDto post = parse(el);
+                PostDto post = parse(p);
+
+                //check language
+                if (!post.getAlt().isEmpty()) {
+                    if (!StopWords.German.isStopWord(post.getAlt())) {
+                        drop.increment();
+                        continue;
+                    }
+                }
                 String hash = calculateHash(post);
                 total.increment();
                 if (!existInRedis(hash)) {
@@ -70,7 +80,7 @@ public class NineGag extends BaseIntegrationImpl {
                     duplicates.increment();
                     getAndApplyNextTag();
                 }
-            });
+            }
         }
     }
 
