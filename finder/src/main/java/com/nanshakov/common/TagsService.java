@@ -4,6 +4,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,6 +16,14 @@ public class TagsService {
 
     private final Set<String> tagsStore = new HashSet<>();
     private final Set<String> processedTags = new HashSet<>();
+
+    public void addTags(Collection<String> tag) {
+        tag.forEach(t -> {
+            if (!processedTags.contains(t)) {
+                tagsStore.add(t);
+            }
+        });
+    }
 
     public void addTag(String tag) {
         if (!processedTags.contains(tag)) {
@@ -28,7 +37,7 @@ public class TagsService {
     }
 
     @Null
-    String getNextTag() {
+    public String getNextTag() {
         return tagsStore.stream().findAny().orElse(null);
     }
 }

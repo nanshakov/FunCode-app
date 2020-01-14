@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.Null;
 
@@ -28,8 +30,10 @@ public class NineGag extends BaseIntegrationImpl {
     private int nextId = 10;
     @Value("${NineGag.tags}")
     private String tags;
-    @Value("${NineGag.recursion}")
-    private boolean recursion;
+    @Value("${NineGag.recursion.enable: false}")
+    private boolean IsRecursionModeEnable;
+    @Value("${NineGag.recursion.depth:1000}")
+    private long recursionDepth;
     @Value("${NineGag.download-url}")
     private String downloadUrl;
     private String currentTag;
@@ -43,16 +47,27 @@ public class NineGag extends BaseIntegrationImpl {
         log.info("Started...");
         while (true) {
             NineGagDto rawPosts = getPage();
+            //possible parsing error
             if (rawPosts == null) {
                 continue;
             }
             //получаем новые id
-            if (rawPosts.getData().getNextCursor() == null) {
-                break;
+            if (rawPosts.getData().getNextCursor() == null && nextId > recursionDepth) {
+                if (IsRecursionModeEnable) {
+                    currentTag = tagsService.getNextTag();
+                    nextId = 10;
+                    if (currentTag == null) { break; } else {
+                        log.info("Current tag is: {}", currentTag);
+                        continue;
+                    }
+                }
             }
             nextId = extractId(rawPosts.getData().getNextCursor());
             rawPosts.getData().getPosts().forEach(el -> {
-                el.getTags().forEach(t -> tagsService.addTag(t.getKey()));
+                if (IsRecursionModeEnable) {
+                    List<String> tags = el.getTags().stream().map(NineGagDto.Tag::getKey).collect(Collectors.toList());
+                    tagsService.addTags(tags);
+                }
                 PostDto post = parse(el);
                 String hash = calculateHash(post);
                 total.increment();
@@ -61,7 +76,7 @@ public class NineGag extends BaseIntegrationImpl {
                 } else {
                     log.info("Post {} with hash {} found in redis, do nothing", post, hash);
                     duplicates.increment();
-                    tagsService.markTagAsProcessed(currentTag);
+                    if (IsRecursionModeEnable) { tagsService.markTagAsProcessed(currentTag); }
                 }
             });
         }
