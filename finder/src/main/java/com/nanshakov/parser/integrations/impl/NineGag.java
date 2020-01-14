@@ -55,14 +55,7 @@ public class NineGag extends BaseIntegrationImpl {
             }
             //получаем новые id
             if (rawPosts.getData().getNextCursor() == null && nextId > recursionDepth) {
-                if (IsRecursionModeEnable) {
-                    currentTag = tagsService.getNextTag();
-                    nextId = 10;
-                    if (currentTag == null) { break; } else {
-                        log.info("Current tag is: {}", currentTag);
-                        continue;
-                    }
-                }
+                getAndApplyNextTag();
             }
             nextId = extractId(rawPosts.getData().getNextCursor());
             rawPosts.getData().getPosts().forEach(el -> {
@@ -78,9 +71,20 @@ public class NineGag extends BaseIntegrationImpl {
                 } else {
                     log.info("Post {} with hash {} found in redis, do nothing", post, hash);
                     duplicates.increment();
-                    if (IsRecursionModeEnable) { tagsService.markTagAsProcessed(currentTag); }
+                    getAndApplyNextTag();
                 }
             });
+        }
+    }
+
+    private void getAndApplyNextTag() {
+        if (IsRecursionModeEnable) {
+            tagsService.markTagAsProcessed(currentTag);
+            currentTag = tagsService.getNextTag();
+            nextId = 10;
+            if (currentTag != null) {
+                log.info("Current tag is: {}", currentTag);
+            }
         }
     }
 

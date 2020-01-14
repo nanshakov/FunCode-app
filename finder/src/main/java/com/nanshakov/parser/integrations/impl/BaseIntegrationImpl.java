@@ -13,6 +13,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import lombok.extern.log4j.Log4j2;
@@ -38,7 +41,8 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
 
     @SuppressWarnings("ConstantConditions")
     public boolean existInRedis(String hash) {
-        return !redisTemplate.opsForValue().setIfAbsent(hash, Status.ACCEPTED);
+        //TODO set Duration to 1 hr
+        return !redisTemplate.opsForValue().setIfAbsent(hash, Status.ACCEPTED, Duration.of(60L, ChronoUnit.SECONDS));
     }
 
     public void close() {
