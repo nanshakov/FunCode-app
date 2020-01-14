@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import javax.validation.constraints.Null;
 
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -27,8 +28,9 @@ public class Ifunny extends BaseIntegrationImpl {
     @Value("${IFUNNY.download-url}")
     private String downloadUrl;
 
+    @SneakyThrows
     @Override
-    public void start() throws InterruptedException {
+    public void run() {
         Thread.sleep(1000);
         if (!type.equals(getPlatform().toString())) { return; }
         printBaseInfo();

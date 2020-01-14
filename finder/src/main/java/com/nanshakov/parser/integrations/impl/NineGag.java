@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.Null;
 
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -38,8 +39,9 @@ public class NineGag extends BaseIntegrationImpl {
     private String downloadUrl;
     private String currentTag;
 
+    @SneakyThrows
     @Override
-    public void start() throws InterruptedException {
+    public void run() {
         Thread.sleep(1000);
         currentTag = tags;
         if (!type.equals(getPlatform().toString())) { return; }
@@ -124,7 +126,7 @@ public class NineGag extends BaseIntegrationImpl {
                 .likes(el.getUpVoteCount())
                 .dislikes(el.getDownVoteCount())
                 .comments(el.getCommentsCount())
-                .dateTime(new Timestamp(Long.valueOf(el.getCreationTs() + "000")).toLocalDateTime())
+                .dateTime(new Timestamp(Long.parseLong(el.getCreationTs() + "000")).toLocalDateTime())
                 .build();
     }
 
