@@ -1,43 +1,75 @@
 package com.nanshakov.common;
 
+import lombok.Builder;
+import lombok.Data;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.validation.constraints.Null;
+import java.util.*;
 
 @Service
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@NotThreadSafe
 public class TagsService {
 
-    private final Set<String> tagsStore = new HashSet<>();
+    private final TreeSet<Tag> tagsStore = new TreeSet<>();
+    private final Map<String, Integer> frequencies = new HashMap<>();
     private final Set<String> processedTags = new HashSet<>();
 
-    public void addTags(Collection<String> tag) {
-        tag.forEach(t -> {
-            if (!processedTags.contains(t)) {
-                tagsStore.add(t);
-            }
-        });
-    }
-
-    public void addTag(String tag) {
-        if (!processedTags.contains(tag)) {
-            tagsStore.add(tag);
+    public void addTags(Collection<String> tags) {
+        for (String tag : tags) {
+            push(tag);
         }
     }
 
-    public void markTagAsProcessed(String tag) {
-        processedTags.add(tag);
-        tagsStore.remove(tag);
+    public void push(String text) {
+        if (!processedTags.contains(text)) {
+            var tag = getLastTagByString(text);
+            tagsStore.remove(tag);
+            tag.increment();
+            tagsStore.add(tag);
+            frequencies.put(text, tag.getCount());
+        }
+    }
+
+    public void invalidate(String text) {
+        processedTags.add(text);
+        tagsStore.remove(getLastTagByString(text));
     }
 
     @Null
-    public String getNextTag() {
-        return tagsStore.stream().findAny().orElse(null);
+    public String pop() {
+        if (!tagsStore.isEmpty()) {
+            String tag = tagsStore.pollLast().text;
+            processedTags.add(tag);
+            return tag;
+        }
+        return null;
+    }
+
+    private Tag getLastTagByString(String tag) {
+        return Tag.builder()
+                .text(tag)
+                .count(frequencies.getOrDefault(tag, 0))
+                .build();
+    }
+
+    @Data
+    @Builder
+    public static class Tag implements Comparable<Tag> {
+        String text;
+        int count;
+
+        public void increment() {
+            count++;
+        }
+
+        @Override
+        public int compareTo(Tag o) {
+            return Integer.compare(count, o.count);
+        }
     }
 }

@@ -5,22 +5,19 @@ import com.nanshakov.common.dto.NineGagDto;
 import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
-
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import javax.validation.constraints.Null;
-
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
@@ -79,8 +76,7 @@ public class NineGag extends BaseIntegrationImpl {
 
     private void getAndApplyNextTag() {
         if (IsRecursionModeEnable) {
-            tagsService.markTagAsProcessed(currentTag);
-            currentTag = tagsService.getNextTag();
+            currentTag = tagsService.pop();
             nextId = 10;
             if (currentTag != null) {
                 log.info("Current tag is: {}", currentTag);
