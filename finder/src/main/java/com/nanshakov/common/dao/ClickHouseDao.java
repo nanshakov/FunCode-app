@@ -28,7 +28,7 @@ public class ClickHouseDao implements PostMetaRepository {
     @Override
     public boolean containsByUrl(String hash) {
         return jdbcTemplate.queryForObject(
-                "select count(urlhash) from " + schema + " where urlhash=?",
+                "select count(urlImgHash) from " + schema + " where urlImgHash=?",
                 new Object[] {hash}, Boolean.class);
     }
 
@@ -36,7 +36,7 @@ public class ClickHouseDao implements PostMetaRepository {
     @Override
     public boolean containsByContent(String hash) {
         return jdbcTemplate.queryForObject(
-                "select count(contenthash) from " + schema + " where contenthash=?",
+                "select count(contentHash) from " + schema + " where contentHash=?",
                 new Object[] {hash}, Boolean.class);
     }
 
