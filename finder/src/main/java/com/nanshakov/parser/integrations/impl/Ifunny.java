@@ -3,7 +3,8 @@ package com.nanshakov.parser.integrations.impl;
 import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
-
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,12 +12,8 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-
 import javax.validation.constraints.Null;
-
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import java.io.IOException;
 
 @Log4j2
 @Service
@@ -102,6 +99,7 @@ public class Ifunny extends BaseIntegrationImpl {
             String[] parts = dataSrc.split("/");
             //TODO [экстремальное программирование] хорошо бы как-то проверить что их и правда 5...
             String url = downloadUrl + parts[5];
+
             PostDto p = new PostDto();
             p.setImgUrl(url);
             p.setUrl("");
