@@ -48,8 +48,8 @@ public class KafkaListener {
         PostDto post = rawMessage.value();
         //simple hash by url
         if (!postMetaRepository.containsByUrl(hash)) {
-            log.info("Downloading...{}", post.getImgUrl());
             try {
+                log.info("Downloading...{}", post.getImgUrl());
                 byte[] img = Utils.copyUrlToByteArray(post.getImgUrl());
                 String contentHash = Utils.calculateHashSha256(img);
                 //check by content hash
