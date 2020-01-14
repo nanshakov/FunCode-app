@@ -44,7 +44,7 @@ public class ClickHouseDao implements PostMetaRepository {
     public int add(PostDto p) {
         log.info("Saving to DB {}", p);
         SimpleJdbcInsert simpleJdbcInsert =
-                new SimpleJdbcInsert(jdbcTemplate).withTableName("meta");
+                new SimpleJdbcInsert(jdbcTemplate).withTableName(schema);
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("urlImgHash", p.getUrlHash());
         parameters.put("sourceUrl", p.getUrl());
