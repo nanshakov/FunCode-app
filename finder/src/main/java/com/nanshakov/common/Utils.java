@@ -13,9 +13,9 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Utils {
 
-    public byte[] copyURLToByteArray(final String urlStr)
+    public byte[] copyUrlToByteArray(final String urlStr)
             throws IOException {
-        return copyURLToByteArray(urlStr, 5000, 5000);
+        return copyUrlToByteArray(urlStr, 5000, 5000);
     }
 
     public String getExtension(String urlStr) {
@@ -23,7 +23,7 @@ public class Utils {
         return "." + split[split.length - 1];
     }
 
-    public byte[] copyURLToByteArray(
+    public byte[] copyUrlToByteArray(
             final String urlStr,
             final int connectionTimeout, final int readTimeout)
             throws IOException {

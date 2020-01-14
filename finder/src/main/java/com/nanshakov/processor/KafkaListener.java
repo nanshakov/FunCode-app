@@ -50,13 +50,14 @@ public class KafkaListener {
         if (!postMetaRepository.containsByUrl(hash)) {
             log.info("Downloading...{}", post.getImgUrl());
             try {
-                byte[] img = Utils.copyURLToByteArray(post.getImgUrl());
+                byte[] img = Utils.copyUrlToByteArray(post.getImgUrl());
                 String contentHash = Utils.calculateHashSha256(img);
+                //check by content hash
                 if (!postMetaRepository.containsByContent(contentHash)) {
                     String fname = contentHash + Utils.getExtension(post.getImgUrl());
                     fileUploader.putObject(bucket, fname, img);
                     post.setUrlHash(hash);
-                    post.setImg(Utils.copyURLToByteArray(post.getImgUrl()));
+                    post.setImg(Utils.copyUrlToByteArray(post.getImgUrl()));
                     post.setContentHash(Utils.calculateHashSha256(img));
                     post.setPathToContent(constructUrl(fname));
                     totalProcessed.increment();

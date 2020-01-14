@@ -58,7 +58,7 @@ public class NineGagDto {
         @JsonProperty("downVoteCount")
         private Integer downVoteCount;
         @JsonProperty("creationTs")
-        private Integer creationTs;
+        private Long creationTs;
         @JsonProperty("promoted")
         private Integer promoted;
         @JsonProperty("isVoteMasked")

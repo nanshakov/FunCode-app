@@ -98,7 +98,7 @@ public class NineGag extends BaseIntegrationImpl {
         try {
             StringBuilder url = new StringBuilder();
             url.append(downloadUrl)
-                    .append(tags)
+                    .append(currentTag)
                     .append("&c=")
                     .append(nextId);
             return objectMapper.readValue(call(url.toString()), NineGagDto.class);
@@ -130,7 +130,7 @@ public class NineGag extends BaseIntegrationImpl {
                 .likes(el.getUpVoteCount())
                 .dislikes(el.getDownVoteCount())
                 .comments(el.getCommentsCount())
-                .dateTime(new Timestamp(Long.parseLong(el.getCreationTs() + "000")).toLocalDateTime())
+                .dateTime(new Timestamp(el.getCreationTs() * 1000L).toLocalDateTime())
                 .build();
     }
 
