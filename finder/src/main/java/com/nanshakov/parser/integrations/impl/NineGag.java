@@ -57,6 +57,9 @@ public class NineGag extends BaseIntegrationImpl {
                 getAndApplyNextTag();
             }
             nextId = extractId(rawPosts.getData().getNextCursor());
+            if (nextId == -1) {
+                getAndApplyNextTag();
+            }
             for (NineGagDto.Post p : rawPosts.getData().getPosts()) {
                 if (IsRecursionModeEnable) {
                     List<String> tags = p.getTags().stream().map(NineGagDto.Tag::getKey).collect(Collectors.toList());
@@ -148,8 +151,10 @@ public class NineGag extends BaseIntegrationImpl {
 
     @Null
     private int extractId(String str) {
-        String[] split = str.split(Pattern.quote("="));
-        if (split.length != 0) { return Integer.parseInt(split[split.length - 1]); }
+        if (str != null) {
+            String[] split = str.split(Pattern.quote("="));
+            if (split.length != 0) { return Integer.parseInt(split[split.length - 1]); }
+        }
         return -1;
     }
 }
