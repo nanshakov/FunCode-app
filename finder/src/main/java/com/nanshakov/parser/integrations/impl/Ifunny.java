@@ -52,14 +52,7 @@ public class Ifunny extends BaseIntegrationImpl {
             Elements listNews = doc.select(".post__media");
             listNews.forEach(el -> {
                 PostDto post = parse(el);
-                total.increment();
-                String hash = calculateHash(post);
-                if (!existInRedis(hash)) {
-                    sendToKafka(hash, post);
-                } else {
-                    log.trace("Post {} with hash {} found in redis, do nothing", post, hash);
-                    duplicates.increment();
-                }
+                sendToKafka(post);
             });
         }
     }

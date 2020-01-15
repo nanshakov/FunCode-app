@@ -5,7 +5,6 @@ import com.nanshakov.common.dto.NineGagDto;
 import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
-import com.nanshakov.lib.src.cue.lang.stop.StopWords;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,21 +73,10 @@ public class NineGag extends BaseIntegrationImpl {
                     tagsService.addTags(tags);
                 }
                 PostDto post = parse(p);
-
-                //check language
-                if (!post.getAlt().isEmpty()) {
-                    if (!StopWords.German.isStopWord(post.getAlt())) {
-                        drop.increment();
-                        continue;
-                    }
+                if (!checkLang(post.getAlt())) {
+                    continue;
                 }
-                String hash = calculateHash(post);
-                total.increment();
-                if (!existInRedis(hash)) {
-                    sendToKafka(hash, post);
-                } else {
-                    log.info("Post {} with hash {} found in redis, do nothing", post, hash);
-                    duplicates.increment();
+                if (!sendToKafka(post)) {
                     getAndApplyNextTag();
                 }
             }
