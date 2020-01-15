@@ -18,6 +18,7 @@ package com.nanshakov.lib.src.cue.lang.stop;
 
 import com.nanshakov.lib.src.cue.lang.Counter;
 import com.nanshakov.lib.src.cue.lang.WordIterator;
+import lombok.Getter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,14 +26,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import lombok.Getter;
 
 /**
  * @author Jonathan Feinberg <jdf@us.ibm.com>
@@ -80,9 +75,6 @@ public enum StopWords {
     }
 
     public boolean isStopWord(final String s) {
-        if (s.length() == 1) {
-            return true;
-        }
         // check rightquotes as apostrophes
         String temp = s.replace('\u2019', '\'').toLowerCase(Locale.ENGLISH);
         List<String> split = Arrays.stream(temp.split(" ")).collect(Collectors.toList());
@@ -92,6 +84,19 @@ public enum StopWords {
             }
         }
         return false;
+    }
+
+    public int stopWordCount(final String s) {
+        // check rightquotes as apostrophes
+        int i = 0;
+        String temp = s.replace('\u2019', '\'').toLowerCase(Locale.ENGLISH);
+        List<String> split = Arrays.stream(temp.split(" ")).collect(Collectors.toList());
+        for (String str : split) {
+            if (stopwords.contains(str)) {
+                i++;
+            }
+        }
+        return i;
     }
 
     private void loadLanguage() {
