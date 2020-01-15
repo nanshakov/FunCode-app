@@ -33,6 +33,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
+
 /**
  * @author Jonathan Feinberg <jdf@us.ibm.com>
  */
@@ -40,6 +42,7 @@ public enum StopWords {
     English(), German();
 
     public final boolean stripApostrophes;
+    @Getter
     private final Set<String> stopwords = new HashSet<String>();
 
     StopWords() {

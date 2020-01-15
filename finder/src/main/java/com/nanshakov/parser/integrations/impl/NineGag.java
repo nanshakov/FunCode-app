@@ -5,6 +5,7 @@ import com.nanshakov.common.dto.NineGagDto;
 import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
+import com.nanshakov.lib.src.cue.lang.stop.StopWords;
 
 import org.jsoup.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class NineGag extends BaseIntegrationImpl {
     private boolean IsRecursionModeEnable;
     @Value("${NineGag.recursion.depth:1000}")
     private long recursionDepth;
+    @Value("${NineGag.recursion.duplicates-count:500}")
+    private long duplicatesCountLimit;
     @Value("${NineGag.download-url}")
     private String downloadUrl;
     private String currentTag;
@@ -43,14 +46,14 @@ public class NineGag extends BaseIntegrationImpl {
     @SneakyThrows
     @Override
     public void run() {
-        Thread.sleep(1000);
         if (!type.equals(getPlatform().toString())) {
             return;
         }
         //todo автоматически делать это
         if (IsRecursionModeEnable) {
             tagsService.addTags(Arrays.stream(tags.split(",")).map(String::trim).collect(Collectors.toList()));
-            currentTag = tagsService.pop();
+            getAndApplyNextTag();
+            tagsService.addTags(StopWords.German.getStopwords());
         }
         printBaseInfo();
         log.info("Started...");
@@ -61,23 +64,12 @@ public class NineGag extends BaseIntegrationImpl {
                 continue;
             }
 
-            //Если достигли лимита рекурсивного обхода
-            if (IsRecursionModeEnable && nextId > recursionDepth) {
-                getAndApplyNextTag();
-            }
-            //Если id нет то получаем новый тег
-            if (rawPosts.getData().getNextCursor() == null) {
-                getAndApplyNextTag();
-            }
-            //получаем новые id
-            nextId = extractId(rawPosts.getData().getNextCursor());
-            //что - то пошло не так
-            if (nextId == -1) {
-                getAndApplyNextTag();
-            }
             for (NineGagDto.Post p : rawPosts.getData().getPosts()) {
                 if (IsRecursionModeEnable) {
-                    List<String> tags = p.getTags().stream().map(NineGagDto.Tag::getKey).collect(Collectors.toList());
+                    List<String> tags = p.getTags()
+                            .stream()
+                            .map(t -> t.getUrl().replace("/tag/", "").toLowerCase())
+                            .collect(Collectors.toList());
                     tagsService.addTags(tags);
                 }
                 PostDto post = parse(p);
@@ -85,8 +77,31 @@ public class NineGag extends BaseIntegrationImpl {
                     continue;
                 }
                 if (!sendToKafka(post)) {
-                    getAndApplyNextTag();
+                    if (duplicatesCount > duplicatesCountLimit) {
+                        log.info("Switch by duplicates {}", duplicatesCount);
+                        getAndApplyNextTag();
+                    }
                 }
+            }
+
+            //Если достигли лимита рекурсивного обхода
+            if (IsRecursionModeEnable && nextId > recursionDepth) {
+                log.info("Switch by limit nextId {}, recursionDepth {}", nextId, recursionDepth);
+                getAndApplyNextTag();
+            }
+
+            //Если id нет то получаем новый тег
+            if (rawPosts.getData().getNextCursor() == null) {
+                log.info("Switch by cursor (nextId) is null. End of data.");
+                getAndApplyNextTag();
+            }
+
+            //получаем новые id
+            nextId = extractId(rawPosts.getData().getNextCursor());
+            //что - то пошло не так
+            if (nextId == -1) {
+                log.info("Switch by wrong parsing nextId");
+                getAndApplyNextTag();
             }
         }
     }
@@ -95,6 +110,7 @@ public class NineGag extends BaseIntegrationImpl {
      * Получает новый тег и сбрасывает счетчик страницы
      */
     private void getAndApplyNextTag() {
+        duplicatesCount = 0;
         if (IsRecursionModeEnable) {
             currentTag = tagsService.pop();
             nextId = 10;

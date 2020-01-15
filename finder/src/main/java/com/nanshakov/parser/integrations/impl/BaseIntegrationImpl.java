@@ -47,6 +47,8 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
     @Autowired
     private KafkaTemplate<String, PostDto> kafkaTemplate;
 
+    long duplicatesCount = 0;
+
     @SuppressWarnings("ConstantConditions")
     public boolean existInRedis(String hash) {
         //TODO set Duration to 1 hr
@@ -67,6 +69,7 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
         } else {
             log.trace("Post {} with hash {} found in redis, do nothing", post, hash);
             duplicates.increment();
+            duplicatesCount++;
             return false;
         }
 
