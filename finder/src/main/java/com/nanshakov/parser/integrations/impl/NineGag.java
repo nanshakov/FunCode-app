@@ -5,22 +5,21 @@ import com.nanshakov.common.dto.NineGagDto;
 import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
+import com.nanshakov.lib.src.cue.lang.stop.StopWords;
 
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import javax.validation.constraints.Null;
-
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
@@ -58,26 +57,22 @@ public class NineGag extends BaseIntegrationImpl {
                 getAndApplyNextTag();
             }
             nextId = extractId(rawPosts.getData().getNextCursor());
-            if (nextId == -1) {
-                getAndApplyNextTag();
-            }
-            for (NineGagDto.Post p : rawPosts.getData().getPosts()) {
+            rawPosts.getData().getPosts().forEach(el -> {
                 if (IsRecursionModeEnable) {
-                    List<String> tags = p.getTags().stream().map(NineGagDto.Tag::getKey).collect(Collectors.toList());
+                    List<String> tags = el.getTags().stream().map(NineGagDto.Tag::getKey).collect(Collectors.toList());
                     tagsService.addTags(tags);
                 }
-                PostDto post = parse(p);
+                PostDto post = parse(el);
                 String hash = calculateHash(post);
                 total.increment();
                 if (!existInRedis(hash)) {
-                    //sendToKafka(hash, post);
+                    sendToKafka(hash, post);
                 } else {
                     log.info("Post {} with hash {} found in redis, do nothing", post, hash);
                     duplicates.increment();
                     getAndApplyNextTag();
                 }
             }
-            ;
         }
     }
 
@@ -145,10 +140,8 @@ public class NineGag extends BaseIntegrationImpl {
 
     @Null
     private int extractId(String str) {
-        if (str != null) {
-            String[] split = str.split(Pattern.quote("="));
-            if (split.length != 0) { return Integer.parseInt(split[split.length - 1]); }
-        }
+        String[] split = str.split(Pattern.quote("="));
+        if (split.length != 0) { return Integer.parseInt(split[split.length - 1]); }
         return -1;
     }
 }
