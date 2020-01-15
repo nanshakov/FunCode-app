@@ -1,10 +1,13 @@
 package com.nanshakov.common.dao;
 
-import com.nanshakov.common.dao.data.Post;
+import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
+import com.nanshakov.common.dto.Type;
 import com.nanshakov.common.repo.PostMetaRepository;
+import com.nanshakov.controllers.response.Post;
 import com.nanshakov.controllers.response.Result;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -14,9 +17,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
@@ -32,7 +32,7 @@ public class ClickHouseDao implements PostMetaRepository {
     public boolean containsByUrl(String hash) {
         return jdbcTemplate.queryForObject(
                 "select count(urlImgHash) from " + schema + " where urlImgHash=?",
-                new Object[] {hash}, Boolean.class);
+                new Object[]{hash}, Boolean.class);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -40,7 +40,7 @@ public class ClickHouseDao implements PostMetaRepository {
     public boolean containsByContent(String hash) {
         return jdbcTemplate.queryForObject(
                 "select count(contentHash) from " + schema + " where contentHash=?",
-                new Object[] {hash}, Boolean.class);
+                new Object[]{hash}, Boolean.class);
     }
 
     @Override
@@ -69,17 +69,32 @@ public class ClickHouseDao implements PostMetaRepository {
     public Post findById(String id) {
         return jdbcTemplate.queryForObject(
                 "select * from " + schema + " where urlImgHash=?",
-                new Object[] {id}, Post.class);
+                new Object[]{id}, Post.class);
     }
 
     @Override
     public Result findByPage(int pageNum, int limit) {
         int count = jdbcTemplate.queryForObject("select count(urlImgHash) from " + schema, Integer.class).intValue();
+        int pages = (int) (count / limit) + 1;
         return Result.builder()
                 .currentPage(pageNum)
-                .pages((int) (count / limit) + 1)
-                .posts(jdbcTemplate.queryForList(
-                        "select * from " + schema + " ORDER BY datetime DESC LIMIT ?, limit",
-                        new Object[] {--pageNum * limit}, Post.class)).build();
+                .pages(pages)
+                .posts(jdbcTemplate.query(
+                        "select * from " + schema + " ORDER BY datetime DESC LIMIT ?, ?",
+                        new Object[]{--pageNum * limit, limit}, (rs, rowNum) ->
+                                Post.builder()
+                                        .alt(rs.getString("alt"))
+                                        .author(rs.getString("author"))
+                                        .comments(rs.getLong("comments"))
+                                        .dateTime(null)
+                                        .dislikes(rs.getLong("dislikes"))
+                                        .likes(rs.getLong("likes"))
+                                        .from(Platform.IFUNNY)
+                                        .id(rs.getString("contentHash"))
+                                        .pathToContent(rs.getString("pathToContent"))
+                                        .url(rs.getString("sourceUrl"))
+                                        .type(Type.PHOTO)
+                                        .build()
+                )).build();
     }
 }

@@ -1,15 +1,14 @@
-package com.nanshakov.common.dao.data;
+package com.nanshakov.controllers.response;
 
 import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.Type;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -17,9 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Post implements Serializable {
 
-    String contentHash;
-
-    String urlHash;
+    String id;
 
     LocalDateTime dateTime;
 
@@ -34,8 +31,6 @@ public class Post implements Serializable {
     String author;
 
     String url;
-
-    String imgUrl;
 
     String alt;
 
