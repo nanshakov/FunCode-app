@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +51,8 @@ public class ClickHouseDao implements PostMetaRepository {
         parameters.put("sourceUrl", p.getUrl());
         parameters.put("contentHash", p.getContentHash());
         parameters.put("source", p.getFrom());
-        parameters.put("datetime", p.getDateTime().format(DateTimeFormatter.ofPattern("YYYY-MM-DD hh:mm:ss")));
+        // parameters.put("datetime", p.getDateTime().format(DateTimeFormatter.ofPattern("YYYY-MM-DD hh:mm:ss")));
+        parameters.put("datetime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-DD hh:mm:ss")));
         parameters.put("pathToContent", p.getPathToContent());
         parameters.put("likes", p.getLikes());
         parameters.put("dislikes", p.getDislikes());

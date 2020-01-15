@@ -23,7 +23,7 @@ spring:
     host: docker01.dev.mdlp.crpt.tech
     port: 6379
   kafka:
-    topic: "nanshakov10"
+    topic: "nanshakov12"
     producer:
       bootstrap:
         servers: docker01.dev.mdlp.crpt.tech:9092
