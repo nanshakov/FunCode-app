@@ -27,7 +27,7 @@ import lombok.extern.log4j.Log4j2;
 public class NineGag extends BaseIntegrationImpl {
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
     private int nextId = 10;
     @Value("${NineGag.tags}")
     private String tags;
@@ -55,15 +55,22 @@ public class NineGag extends BaseIntegrationImpl {
         log.info("Started...");
         while (true) {
             NineGagDto rawPosts = getPage();
-            //possible parsing error
+            //Если произошла ошибка парсинга
             if (rawPosts == null) {
                 continue;
             }
-            //получаем новые id
-            if (rawPosts.getData().getNextCursor() == null && nextId > recursionDepth) {
+
+            //Если достигли лимита рекурсивного обхода
+            if (IsRecursionModeEnable && nextId > recursionDepth) {
                 getAndApplyNextTag();
             }
+            //Если id нет то получаем новый тег
+            if (rawPosts.getData().getNextCursor() == null) {
+                getAndApplyNextTag();
+            }
+            //получаем новые id
             nextId = extractId(rawPosts.getData().getNextCursor());
+            //что - то пошло не так
             if (nextId == -1) {
                 getAndApplyNextTag();
             }
@@ -83,6 +90,9 @@ public class NineGag extends BaseIntegrationImpl {
         }
     }
 
+    /**
+     * Получает новый тег и сбрасывает счетчик страницы
+     */
     private void getAndApplyNextTag() {
         if (IsRecursionModeEnable) {
             currentTag = tagsService.pop();
