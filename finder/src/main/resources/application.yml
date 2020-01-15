@@ -11,7 +11,7 @@ NineGag:
   recursion:
     enable: true
     depth: 10000
-    duplicates-count: 500
+    duplicates-count: 100
 
 spring:
   datasource:

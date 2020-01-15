@@ -27,10 +27,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
@@ -43,7 +42,7 @@ public enum StopWords {
 
     public final boolean stripApostrophes;
     @Getter
-    private final Set<String> stopwords = new HashSet<String>();
+    private final TreeSet<String> stopwords = new TreeSet<>();
 
     StopWords() {
         this(false);

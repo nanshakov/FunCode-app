@@ -37,7 +37,7 @@ public class NineGag extends BaseIntegrationImpl {
     private boolean IsRecursionModeEnable;
     @Value("${NineGag.recursion.depth:1000}")
     private long recursionDepth;
-    @Value("${NineGag.recursion.duplicates-count:500}")
+    @Value("${NineGag.recursion.duplicates-count:100}")
     private long duplicatesCountLimit;
     @Value("${NineGag.download-url}")
     private String downloadUrl;
