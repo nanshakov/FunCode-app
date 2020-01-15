@@ -1,7 +1,9 @@
 package com.nanshakov.common.dao;
 
+import com.nanshakov.common.dao.data.Post;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.repo.PostMetaRepository;
+import com.nanshakov.controllers.response.Result;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -61,5 +63,23 @@ public class ClickHouseDao implements PostMetaRepository {
         parameters.put("author", p.getAuthor());
 
         return simpleJdbcInsert.execute(parameters);
+    }
+
+    @Override
+    public Post findById(String id) {
+        return jdbcTemplate.queryForObject(
+                "select * from " + schema + " where urlImgHash=?",
+                new Object[] {id}, Post.class);
+    }
+
+    @Override
+    public Result findByPage(int pageNum, int limit) {
+        int count = jdbcTemplate.queryForObject("select count(urlImgHash) from " + schema, Integer.class).intValue();
+        return Result.builder()
+                .currentPage(pageNum)
+                .pages((int) (count / limit) + 1)
+                .posts(jdbcTemplate.queryForList(
+                        "select * from " + schema + " ORDER BY datetime DESC LIMIT ?, limit",
+                        new Object[] {--pageNum * limit}, Post.class)).build();
     }
 }
