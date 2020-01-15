@@ -6,6 +6,7 @@ import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
 
+import org.jsoup.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -99,6 +100,8 @@ public class NineGag extends BaseIntegrationImpl {
             nextId = 10;
             if (currentTag != null) {
                 log.info("Current tag is: {}", currentTag);
+            } else {
+                log.warn("Tag is null!");
             }
         }
     }
@@ -116,9 +119,10 @@ public class NineGag extends BaseIntegrationImpl {
                     .append(currentTag)
                     .append("&c=")
                     .append(nextId);
-            return objectMapper.readValue(call(url.toString()).body().text(), NineGagDto.class);
+            return objectMapper.readValue(call(url.toString(), Connection.Method.GET).body().text(), NineGagDto.class);
         } catch (IOException e) {
-            log.error(e);
+            //часто падает с ошибкой парсинга, из за кривых данныех в строке
+            //log.error(e);
             errors.increment();
             nextId += 10;
         }

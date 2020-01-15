@@ -4,6 +4,7 @@ import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
 
+import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -72,7 +73,7 @@ public class Ifunny extends BaseIntegrationImpl {
                     .append(nextId)
                     .append("?page=")
                     .append(pageNum);
-            return call(url.toString());
+            return call(url.toString(), Connection.Method.POST);
         } catch (IOException e) {
             errors.increment();
             log.error(e);

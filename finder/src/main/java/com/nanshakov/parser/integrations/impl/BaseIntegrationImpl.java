@@ -7,6 +7,7 @@ import com.nanshakov.configuration.Status;
 import com.nanshakov.lib.src.cue.lang.stop.StopWords;
 import com.nanshakov.parser.integrations.BaseIntegration;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
     @SuppressWarnings("ConstantConditions")
     public boolean existInRedis(String hash) {
         //TODO set Duration to 1 hr
-        return !redisTemplate.opsForValue().setIfAbsent(hash, Status.ACCEPTED, Duration.of(60L, ChronoUnit.SECONDS));
+        return !redisTemplate.opsForValue().setIfAbsent(hash, Status.ACCEPTED, Duration.of(60L, ChronoUnit.MINUTES));
     }
 
     public void close() {
@@ -61,10 +62,10 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
         String hash = calculateHash(post);
         total.increment();
         if (!existInRedis(hash)) {
-            kafkaTemplate.send(topic, hash, post);
+            //kafkaTemplate.send(topic, hash, post);
             return true;
         } else {
-            log.info("Post {} with hash {} found in redis, do nothing", post, hash);
+            log.trace("Post {} with hash {} found in redis, do nothing", post, hash);
             duplicates.increment();
             return false;
         }
@@ -85,11 +86,20 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
         return Utils.calculateHashSha1(o);
     }
 
-    @Null Document call(String url) throws IOException {
-        return Jsoup.connect(url)
-                .userAgent("APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
-                .referrer("http://www.google.com")
-                .post();
+    @Null Document call(String url, Connection.Method method) throws IOException {
+        if (method == Connection.Method.POST) {
+            return Jsoup.connect(url)
+                    .ignoreContentType(true)
+                    .userAgent("APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
+                    .referrer("http://www.google.com")
+                    .post();
+        } else {
+            return Jsoup.connect(url)
+                    .ignoreContentType(true)
+                    .userAgent("APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
+                    .referrer("http://www.google.com")
+                    .get();
+        }
     }
 
 }

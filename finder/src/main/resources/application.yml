@@ -1,5 +1,5 @@
 #IFUNNY NineGag
-type: IFUNNY
+type: NineGag
 
 IFUNNY:
   download-url: "https://img.ifunny.co/images/"
@@ -10,7 +10,7 @@ NineGag:
   tags: "deutsch"
   recursion:
     enable: true
-    depth: 1000
+    depth: 10000
 
 spring:
   datasource:
@@ -22,7 +22,7 @@ spring:
     host: docker01.dev.mdlp.crpt.tech
     port: 6379
   kafka:
-    topic: "nanshakov9"
+    topic: "nanshakov10"
     producer:
       bootstrap:
         servers: docker01.dev.mdlp.crpt.tech:9092
