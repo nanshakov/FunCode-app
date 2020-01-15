@@ -4,6 +4,7 @@ import com.nanshakov.common.TagsService;
 import com.nanshakov.common.Utils;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.configuration.Status;
+import com.nanshakov.lib.src.cue.lang.stop.StopWords;
 import com.nanshakov.parser.integrations.BaseIntegration;
 
 import org.jsoup.Jsoup;
@@ -56,8 +57,28 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
         ((ConfigurableApplicationContext) ctx).close();
     }
 
-    void sendToKafka(String hash, PostDto p) {
-        kafkaTemplate.send(topic, hash, p);
+    boolean sendToKafka(PostDto post) {
+        String hash = calculateHash(post);
+        total.increment();
+        if (!existInRedis(hash)) {
+            kafkaTemplate.send(topic, hash, post);
+            return true;
+        } else {
+            log.info("Post {} with hash {} found in redis, do nothing", post, hash);
+            duplicates.increment();
+            return false;
+        }
+
+    }
+
+    boolean checkLang(String str) {
+        if (!str.isEmpty()) {
+            if (!StopWords.German.isStopWord(str)) {
+                drop.increment();
+                return false;
+            }
+        }
+        return true;
     }
 
     public String calculateHash(Object o) {

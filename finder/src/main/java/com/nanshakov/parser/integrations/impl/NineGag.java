@@ -5,7 +5,6 @@ import com.nanshakov.common.dto.NineGagDto;
 import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
-import com.nanshakov.lib.src.cue.lang.stop.StopWords;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -27,7 +27,7 @@ import lombok.extern.log4j.Log4j2;
 public class NineGag extends BaseIntegrationImpl {
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
     private int nextId = 10;
     @Value("${NineGag.tags}")
     private String tags;
@@ -43,21 +43,34 @@ public class NineGag extends BaseIntegrationImpl {
     @Override
     public void run() {
         Thread.sleep(1000);
-        currentTag = tags;
-        if (!type.equals(getPlatform().toString())) { return; }
+        if (!type.equals(getPlatform().toString())) {
+            return;
+        }
+        //todo автоматически делать это
+        if (IsRecursionModeEnable) {
+            tagsService.addTags(Arrays.stream(tags.split(",")).map(String::trim).collect(Collectors.toList()));
+            currentTag = tagsService.pop();
+        }
         printBaseInfo();
         log.info("Started...");
         while (true) {
             NineGagDto rawPosts = getPage();
-            //possible parsing error
+            //Если произошла ошибка парсинга
             if (rawPosts == null) {
                 continue;
             }
-            //получаем новые id
-            if (rawPosts.getData().getNextCursor() == null && nextId > recursionDepth) {
+
+            //Если достигли лимита рекурсивного обхода
+            if (IsRecursionModeEnable && nextId > recursionDepth) {
                 getAndApplyNextTag();
             }
+            //Если id нет то получаем новый тег
+            if (rawPosts.getData().getNextCursor() == null) {
+                getAndApplyNextTag();
+            }
+            //получаем новые id
             nextId = extractId(rawPosts.getData().getNextCursor());
+            //что - то пошло не так
             if (nextId == -1) {
                 getAndApplyNextTag();
             }
@@ -67,27 +80,19 @@ public class NineGag extends BaseIntegrationImpl {
                     tagsService.addTags(tags);
                 }
                 PostDto post = parse(p);
-
-                //check language
-                if (!post.getAlt().isEmpty()) {
-                    if (!StopWords.German.isStopWord(post.getAlt())) {
-                        drop.increment();
-                        continue;
-                    }
+                if (!checkLang(post.getAlt())) {
+                    continue;
                 }
-                String hash = calculateHash(post);
-                total.increment();
-                if (!existInRedis(hash)) {
-                    sendToKafka(hash, post);
-                } else {
-                    log.info("Post {} with hash {} found in redis, do nothing", post, hash);
-                    duplicates.increment();
+                if (!sendToKafka(post)) {
                     getAndApplyNextTag();
                 }
             }
         }
     }
 
+    /**
+     * Получает новый тег и сбрасывает счетчик страницы
+     */
     private void getAndApplyNextTag() {
         if (IsRecursionModeEnable) {
             currentTag = tagsService.pop();

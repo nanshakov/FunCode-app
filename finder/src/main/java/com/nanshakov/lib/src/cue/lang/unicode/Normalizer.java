@@ -20,29 +20,29 @@ package com.nanshakov.lib.src.cue.lang.unicode;
  */
 public abstract class Normalizer {
 
-	private static final Normalizer INSTANCE;
+    private static final Normalizer INSTANCE;
 
-	static {
-		try {
-			INSTANCE = (Normalizer) Class.forName(getNormalizerClass())
-					.getConstructor().newInstance();
-		} catch (final Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    static {
+        try {
+            INSTANCE = (Normalizer) Class.forName(getNormalizerClass())
+                    .getConstructor().newInstance();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public static Normalizer getInstance() {
-		return INSTANCE;
-	}
+    public static Normalizer getInstance() {
+        return INSTANCE;
+    }
 
-	private static String getNormalizerClass() {
-		try {
-			Class.forName("java.text.Normalizer");
-			return "cue.lang.unicode.Normalizer6";
-		} catch (final Exception e) {
-			return "cue.lang.unicode.Normalizer5";
-		}
-	}
+    private static String getNormalizerClass() {
+        try {
+            Class.forName("java.text.Normalizer");
+            return "cue.lang.unicode.Normalizer6";
+        } catch (final Exception e) {
+            return "cue.lang.unicode.Normalizer5";
+        }
+    }
 
-	abstract public String normalize(final String s);
+    abstract public String normalize(final String s);
 }

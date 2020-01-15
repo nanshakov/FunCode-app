@@ -20,12 +20,12 @@ package com.nanshakov.lib.src.cue.lang.unicode;
  */
 class Normalizer6 extends Normalizer {
 
-	public Normalizer6() {
-	}
+    public Normalizer6() {
+    }
 
-	@Override
-	public String normalize(final String s) {
-		return java.text.Normalizer
-				.normalize(s, java.text.Normalizer.Form.NFKD);
-	}
+    @Override
+    public String normalize(final String s) {
+        return java.text.Normalizer
+                .normalize(s, java.text.Normalizer.Form.NFKD);
+    }
 }

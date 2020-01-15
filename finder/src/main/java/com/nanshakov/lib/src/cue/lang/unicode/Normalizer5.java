@@ -26,32 +26,32 @@ import java.io.ObjectInputStream;
  */
 class Normalizer5 extends Normalizer {
 
-	private static final char[] TABLE;
+    private static final char[] TABLE;
 
-	static {
-		try {
-			final ObjectInputStream in = new ObjectInputStream(
-					Normalizer5.class.getResourceAsStream("normtable.bin"));
-			try {
-				TABLE = (char[]) in.readObject();
-			} finally {
-				in.close();
-			}
-		} catch (final Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    static {
+        try {
+            final ObjectInputStream in = new ObjectInputStream(
+                    Normalizer5.class.getResourceAsStream("normtable.bin"));
+            try {
+                TABLE = (char[]) in.readObject();
+            } finally {
+                in.close();
+            }
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public Normalizer5() {
-	}
+    public Normalizer5() {
+    }
 
-	@Override
-	public String normalize(final String s) {
-		final StringBuilder sb = new StringBuilder();
-		for (int i = 0, len = s.length(); i < len; i++) {
-			final char c = s.charAt(i);
-			sb.append(c >= TABLE.length ? c : TABLE[c]);
-		}
-		return sb.toString();
-	}
+    @Override
+    public String normalize(final String s) {
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0, len = s.length(); i < len; i++) {
+            final char c = s.charAt(i);
+            sb.append(c >= TABLE.length ? c : TABLE[c]);
+        }
+        return sb.toString();
+    }
 }

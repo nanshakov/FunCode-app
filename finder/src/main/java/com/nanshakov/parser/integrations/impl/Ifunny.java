@@ -30,8 +30,10 @@ public class Ifunny extends BaseIntegrationImpl {
     @SneakyThrows
     @Override
     public void run() {
-        Thread.sleep(1000);
-        if (!type.equals(getPlatform().toString())) { return; }
+        //Thread.sleep(1000);
+        if (!type.equals(getPlatform().toString())) {
+            return;
+        }
         printBaseInfo();
         log.info("Started...");
         int count = Integer.MAX_VALUE;
@@ -41,23 +43,16 @@ public class Ifunny extends BaseIntegrationImpl {
                 close();
                 return;
             }
-            Elements listNews = doc.select("img");
             //получаем новые id
             if (doc.selectFirst("li[data-next]") != null) {
                 nextId = doc.selectFirst("li[data-next]").attr("data-next");
             } else {
                 break;
             }
+            Elements listNews = doc.select(".post__media");
             listNews.forEach(el -> {
                 PostDto post = parse(el);
-                total.increment();
-                String hash = calculateHash(post) + "02";
-                if (!existInRedis(hash)) {
-                    sendToKafka(hash, post);
-                } else {
-                    log.trace("Post {} with hash {} found in redis, do nothing", post, hash);
-                    duplicates.increment();
-                }
+                sendToKafka(post);
             });
         }
     }
@@ -87,20 +82,24 @@ public class Ifunny extends BaseIntegrationImpl {
 
     @Null
     private PostDto parse(Element el) {
-        String dataSrc = el.attr("data-src");
-        if (dataSrc != null && !dataSrc.isEmpty()) {
-            String alt = el.attr("alt");
-            String[] parts = dataSrc.split("/");
-            //TODO [экстремальное программирование] хорошо бы как-то проверить что их и правда 5...
-            String url = downloadUrl + parts[5];
+        Elements img = el.select("img");
 
-            PostDto p = new PostDto();
-            p.setImgUrl(url);
-            p.setUrl("");
-            p.setAlt(alt);
-            p.setFrom(getPlatform());
-            p.setType(Type.PHOTO);
-            return p;
+        String dataSrc = img.attr("data-src");
+        if (dataSrc != null && !dataSrc.isEmpty()) {
+            //TODO [экстремальное программирование] хорошо бы как-то проверить что их и правда 5...
+            String url = downloadUrl + dataSrc.split("/")[5];
+            //ссылка на пост
+            String href = "https://ifunny.co/" + el.select("a[href]").attr("href");
+            //список тегов
+            String alt = img.attr("alt");
+
+            return PostDto.builder()
+                    .imgUrl(url)
+                    .url(href)
+                    .alt(alt)
+                    .from(getPlatform())
+                    .type(Type.PHOTO)
+                    .build();
         }
         return null;
     }

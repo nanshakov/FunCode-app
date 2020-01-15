@@ -65,85 +65,85 @@ import java.util.NoSuchElementException;
  */
 public class NGramIterator extends IterableText {
 
-	private final SentenceIterator sentenceIterator;
-	private final LinkedList<String> grams = new LinkedList<String>();
-	private final int n;
-	private final StopWords stopWords;
+    private final SentenceIterator sentenceIterator;
+    private final LinkedList<String> grams = new LinkedList<String>();
+    private final int n;
+    private final StopWords stopWords;
 
-	private String next;
-	private Iterator<String> currentWordIterator;
+    private String next;
+    private Iterator<String> currentWordIterator;
 
-	public NGramIterator(final int n, final String text) {
-		this(n, text, Locale.getDefault());
-	}
+    public NGramIterator(final int n, final String text) {
+        this(n, text, Locale.getDefault());
+    }
 
-	public NGramIterator(final int n, final String text, final Locale locale) {
-		this(n, text, locale, null);
-	}
+    public NGramIterator(final int n, final String text, final Locale locale) {
+        this(n, text, locale, null);
+    }
 
-	public NGramIterator(
-			final int n, final String text, final Locale locale,
-			final StopWords stopWords) {
-		this.n = n;
-		this.sentenceIterator = new SentenceIterator(text, locale);
-		this.stopWords = stopWords;
-		loadNext();
-	}
+    public NGramIterator(
+            final int n, final String text, final Locale locale,
+            final StopWords stopWords) {
+        this.n = n;
+        this.sentenceIterator = new SentenceIterator(text, locale);
+        this.stopWords = stopWords;
+        loadNext();
+    }
 
-	public boolean hasNext() {
-		return next != null;
-	}
+    public boolean hasNext() {
+        return next != null;
+    }
 
-	public String next() {
-		if (next == null) {
-			throw new NoSuchElementException();
-		}
-		final String result = next;
-		loadNext();
-		return result;
-	}
+    public String next() {
+        if (next == null) {
+            throw new NoSuchElementException();
+        }
+        final String result = next;
+        loadNext();
+        return result;
+    }
 
-	public void remove() {
-		throw new UnsupportedOperationException();
-	}
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
 
-	private void loadNext() {
-		next = null;
-		if (!grams.isEmpty()) {
-			grams.pop();
-		}
-		while (grams.size() < n) {
-			while (currentWordIterator == null
-					|| !currentWordIterator.hasNext()) {
-				if (!sentenceIterator.hasNext()) {
-					return;
-				}
-				grams.clear();
-				currentWordIterator = new WordIterator(sentenceIterator.next())
-						.iterator();
-				for (int i = 0; currentWordIterator.hasNext() && i < n - 1; i++) {
-					maybeAddWord();
-				}
-			}
-			// now grams has n-1 words in it and currentWordIterator hasNext
-			maybeAddWord();
-		}
-		final StringBuilder sb = new StringBuilder();
-		for (final String gram : grams) {
-			if (sb.length() > 0) {
-				sb.append(" ");
-			}
-			sb.append(gram);
-		}
-		next = sb.toString();
-	}
+    private void loadNext() {
+        next = null;
+        if (!grams.isEmpty()) {
+            grams.pop();
+        }
+        while (grams.size() < n) {
+            while (currentWordIterator == null
+                    || !currentWordIterator.hasNext()) {
+                if (!sentenceIterator.hasNext()) {
+                    return;
+                }
+                grams.clear();
+                currentWordIterator = new WordIterator(sentenceIterator.next())
+                        .iterator();
+                for (int i = 0; currentWordIterator.hasNext() && i < n - 1; i++) {
+                    maybeAddWord();
+                }
+            }
+            // now grams has n-1 words in it and currentWordIterator hasNext
+            maybeAddWord();
+        }
+        final StringBuilder sb = new StringBuilder();
+        for (final String gram : grams) {
+            if (sb.length() > 0) {
+                sb.append(" ");
+            }
+            sb.append(gram);
+        }
+        next = sb.toString();
+    }
 
-	private void maybeAddWord() {
-		final String nextWord = currentWordIterator.next();
-		if (stopWords != null && stopWords.isStopWord(nextWord)) {
-			grams.clear();
-		} else {
-			grams.add(nextWord);
-		}
-	}
+    private void maybeAddWord() {
+        final String nextWord = currentWordIterator.next();
+        if (stopWords != null && stopWords.isStopWord(nextWord)) {
+            grams.clear();
+        } else {
+            grams.add(nextWord);
+        }
+    }
 }
