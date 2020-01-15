@@ -6,6 +6,8 @@ import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.configuration.Status;
 import com.nanshakov.parser.integrations.BaseIntegration;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -13,8 +15,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+
+import javax.validation.constraints.Null;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
@@ -59,5 +64,11 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
         return Utils.calculateHashSha1(o);
     }
 
+    @Null Document call(String url) throws IOException {
+        return Jsoup.connect(url)
+                .userAgent("APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
+                .referrer("http://www.google.com")
+                .post();
+    }
 
 }

@@ -7,7 +7,6 @@ import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
 import com.nanshakov.lib.src.cue.lang.stop.StopWords;
 
-import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -112,22 +111,13 @@ public class NineGag extends BaseIntegrationImpl {
                     .append(currentTag)
                     .append("&c=")
                     .append(nextId);
-            return objectMapper.readValue(call(url.toString()), NineGagDto.class);
+            return objectMapper.readValue(call(url.toString()).body().text(), NineGagDto.class);
         } catch (IOException e) {
             log.error(e);
             errors.increment();
             nextId += 10;
         }
         return null;
-    }
-
-    @Null
-    private String call(String url) throws IOException {
-        return Jsoup.connect(url)
-                .userAgent("APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
-                .referrer("http://www.google.com")
-                .ignoreContentType(true)
-                .get().body().text();
     }
 
     @Null
