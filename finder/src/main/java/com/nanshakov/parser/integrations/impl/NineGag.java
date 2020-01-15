@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -40,8 +41,14 @@ public class NineGag extends BaseIntegrationImpl {
     @Override
     public void run() {
         Thread.sleep(1000);
-        currentTag = tags;
-        if (!type.equals(getPlatform().toString())) { return; }
+        if (!type.equals(getPlatform().toString())) {
+            return;
+        }
+        //todo автоматически делать это
+        if (IsRecursionModeEnable) {
+            tagsService.addTags(Arrays.stream(tags.split(",")).map(String::trim).collect(Collectors.toList()));
+            currentTag = tagsService.pop();
+        }
         printBaseInfo();
         log.info("Started...");
         while (true) {
@@ -139,7 +146,9 @@ public class NineGag extends BaseIntegrationImpl {
     @Null
     private int extractId(String str) {
         String[] split = str.split(Pattern.quote("="));
-        if (split.length != 0) { return Integer.parseInt(split[split.length - 1]); }
+        if (split.length != 0) {
+            return Integer.parseInt(split[split.length - 1]);
+        }
         return -1;
     }
 }
