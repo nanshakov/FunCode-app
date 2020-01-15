@@ -3,17 +3,19 @@ package com.nanshakov.parser.integrations.impl;
 import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
-import org.jsoup.Jsoup;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Null;
 import java.io.IOException;
+
+import javax.validation.constraints.Null;
+
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
@@ -83,14 +85,6 @@ public class Ifunny extends BaseIntegrationImpl {
             log.error(e);
         }
         return null;
-    }
-
-    @Null
-    private Document call(String url) throws IOException {
-        return Jsoup.connect(url)
-                .userAgent("APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
-                .referrer("http://www.google.com")
-                .post();
     }
 
     @Null

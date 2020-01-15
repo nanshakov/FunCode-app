@@ -5,9 +5,9 @@ import com.nanshakov.common.Utils;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.configuration.Status;
 import com.nanshakov.parser.integrations.BaseIntegration;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Metrics;
-import lombok.extern.log4j.Log4j2;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -15,8 +15,15 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+
+import javax.validation.constraints.Null;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public abstract class BaseIntegrationImpl implements BaseIntegration {
@@ -34,6 +41,7 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
 
     Counter total = Metrics.counter("parse.total", "parse", "total");
     Counter errors = Metrics.counter("parse.error", "parse", "error");
+    Counter drop = Metrics.counter("parse.drop", "parse", "drop");
     @Autowired
     private KafkaTemplate<String, PostDto> kafkaTemplate;
 
@@ -56,5 +64,11 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
         return Utils.calculateHashSha1(o);
     }
 
+    @Null Document call(String url) throws IOException {
+        return Jsoup.connect(url)
+                .userAgent("APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
+                .referrer("http://www.google.com")
+                .post();
+    }
 
 }

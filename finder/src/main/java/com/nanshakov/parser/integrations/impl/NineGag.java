@@ -5,20 +5,23 @@ import com.nanshakov.common.dto.NineGagDto;
 import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
-import org.jsoup.Jsoup;
+import com.nanshakov.lib.src.cue.lang.stop.StopWords;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.validation.constraints.Null;
+
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
@@ -62,12 +65,23 @@ public class NineGag extends BaseIntegrationImpl {
                 getAndApplyNextTag();
             }
             nextId = extractId(rawPosts.getData().getNextCursor());
-            rawPosts.getData().getPosts().forEach(el -> {
+            if (nextId == -1) {
+                getAndApplyNextTag();
+            }
+            for (NineGagDto.Post p : rawPosts.getData().getPosts()) {
                 if (IsRecursionModeEnable) {
-                    List<String> tags = el.getTags().stream().map(NineGagDto.Tag::getKey).collect(Collectors.toList());
+                    List<String> tags = p.getTags().stream().map(NineGagDto.Tag::getKey).collect(Collectors.toList());
                     tagsService.addTags(tags);
                 }
-                PostDto post = parse(el);
+                PostDto post = parse(p);
+
+                //check language
+                if (!post.getAlt().isEmpty()) {
+                    if (!StopWords.German.isStopWord(post.getAlt())) {
+                        drop.increment();
+                        continue;
+                    }
+                }
                 String hash = calculateHash(post);
                 total.increment();
                 if (!existInRedis(hash)) {
@@ -77,7 +91,7 @@ public class NineGag extends BaseIntegrationImpl {
                     duplicates.increment();
                     getAndApplyNextTag();
                 }
-            });
+            }
         }
     }
 
@@ -104,22 +118,13 @@ public class NineGag extends BaseIntegrationImpl {
                     .append(currentTag)
                     .append("&c=")
                     .append(nextId);
-            return objectMapper.readValue(call(url.toString()), NineGagDto.class);
+            return objectMapper.readValue(call(url.toString()).body().text(), NineGagDto.class);
         } catch (IOException e) {
             log.error(e);
             errors.increment();
             nextId += 10;
         }
         return null;
-    }
-
-    @Null
-    private String call(String url) throws IOException {
-        return Jsoup.connect(url)
-                .userAgent("APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
-                .referrer("http://www.google.com")
-                .ignoreContentType(true)
-                .get().body().text();
     }
 
     @Null
@@ -145,9 +150,9 @@ public class NineGag extends BaseIntegrationImpl {
 
     @Null
     private int extractId(String str) {
-        String[] split = str.split(Pattern.quote("="));
-        if (split.length != 0) {
-            return Integer.parseInt(split[split.length - 1]);
+        if (str != null) {
+            String[] split = str.split(Pattern.quote("="));
+            if (split.length != 0) { return Integer.parseInt(split[split.length - 1]); }
         }
         return -1;
     }
