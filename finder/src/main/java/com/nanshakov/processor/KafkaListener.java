@@ -45,31 +45,31 @@ public class KafkaListener {
         String hash = rawMessage.key();
         PostDto post = rawMessage.value();
         //быстрый поиск по хешу url
-        if (!postMetaRepository.containsByUrl(hash)) {
-            try {
-                log.trace("Downloading...{}", post.getImgUrl());
-                byte[] img = Utils.copyUrlToByteArray(post.getImgUrl());
-                String contentHash = Utils.calculateHashSha256(img);
-                //долгий поиск (за счет загрузки) по хешу кнтента
-                if (!postMetaRepository.containsByContent(contentHash)) {
-                    String fname = contentHash + Utils.getExtension(post.getImgUrl());
-                    fileUploader.putObject(bucket, fname, img);
-                    post.setUrlHash(hash);
-                    post.setImg(Utils.copyUrlToByteArray(post.getImgUrl()));
-                    post.setContentHash(Utils.calculateHashSha256(img));
-                    post.setPathToContent(constructUrl(fname));
-                    postMetaRepository.add(post);
-                    totalProcessed.increment();
-                } else {
-                    duplicates.increment();
-                }
-            } catch (Exception e) {
-                processingErrors.increment();
-                log.error(e);
-            }
-        } else {
+        if (postMetaRepository.containsByUrl(hash)) {
             duplicates.increment();
             log.trace("{} found in clickhouse, do nothing", rawMessage.key());
+            return;
+        }
+        try {
+            log.trace("Downloading...{}", post.getImgUrl());
+            byte[] img = Utils.copyUrlToByteArray(post.getImgUrl());
+            String contentHash = Utils.calculateHashSha256(img);
+            //долгий поиск (за счет загрузки) по хешу кнтента
+            if (postMetaRepository.containsByContent(contentHash)) {
+                duplicates.increment();
+                return;
+            }
+            String fname = contentHash + Utils.getExtension(post.getImgUrl());
+            fileUploader.putObject(bucket, fname, img);
+            post.setUrlHash(hash);
+            post.setImg(Utils.copyUrlToByteArray(post.getImgUrl()));
+            post.setContentHash(Utils.calculateHashSha256(img));
+            post.setPathToContent(constructUrl(fname));
+            postMetaRepository.add(post);
+            totalProcessed.increment();
+        } catch (Exception e) {
+            processingErrors.increment();
+            log.error(e);
         }
 
     }
