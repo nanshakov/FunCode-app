@@ -59,12 +59,12 @@ public class KafkaListener {
                 duplicates.increment();
                 return;
             }
-            String fname = contentHash + Utils.getExtension(post.getImgUrl());
-            fileUploader.putObject(bucket, fname, img);
+            String name = contentHash + Utils.getExtension(post.getImgUrl());
+            fileUploader.putObject(bucket, name, img);
             post.setUrlHash(hash);
             post.setImg(Utils.copyUrlToByteArray(post.getImgUrl()));
             post.setContentHash(Utils.calculateHashSha256(img));
-            post.setPathToContent(constructUrl(fname));
+            post.setPathToContent(constructUrl(name));
             postMetaRepository.add(post);
             totalProcessed.increment();
         } catch (Exception e) {
