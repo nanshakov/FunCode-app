@@ -6,23 +6,20 @@ import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
 import com.nanshakov.lib.src.cue.lang.stop.StopWords;
-
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.jsoup.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import javax.validation.constraints.Null;
-
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
@@ -33,7 +30,7 @@ public class NineGag extends BaseIntegrationImpl {
     private int nextId = 10;
     @Value("${NineGag.tags}")
     private String tags;
-    @Value("${NineGag.recursion.enable: false}")
+    @Value("${NineGag.recursion.enable:false}")
     private boolean IsRecursionModeEnable;
     @Value("${NineGag.recursion.depth:1000}")
     private long recursionDepth;
@@ -46,18 +43,16 @@ public class NineGag extends BaseIntegrationImpl {
     @SneakyThrows
     @Override
     public void run() {
-        if (!type.equals(getPlatform().toString())) {
-            return;
-        }
+        log.info("Started...");
+
         //todo автоматически делать это
         if (IsRecursionModeEnable) {
             tagsService.addTags(Arrays.stream(tags.split(",")).map(String::trim).collect(Collectors.toList()));
             getAndApplyNextTag();
             tagsService.addTags(StopWords.German.getStopwords());
         }
-        printBaseInfo();
-        log.info("Started...");
-        while (true) {
+
+        while (!tagsService.isEmpty()) {
             NineGagDto rawPosts = getPage();
             //Если произошла ошибка парсинга
             if (rawPosts == null) {
@@ -137,7 +132,7 @@ public class NineGag extends BaseIntegrationImpl {
                     .append(nextId);
             return objectMapper.readValue(call(url.toString(), Connection.Method.GET).body().text(), NineGagDto.class);
         } catch (IOException e) {
-            //часто падает с ошибкой парсинга, из за кривых данныех в строке
+            //часто падает с ошибкой парсинга, из за кривых данных от сервера
             //log.error(e);
             errors.increment();
             nextId += 10;
@@ -158,12 +153,6 @@ public class NineGag extends BaseIntegrationImpl {
                 .comments(el.getCommentsCount())
                 .dateTime(new Timestamp(el.getCreationTs() * 1000L).toLocalDateTime())
                 .build();
-    }
-
-    void printBaseInfo() {
-        log.info(new StringBuilder()
-                .append("Module : ").append(getPlatform()).append("\n")
-                .append("Tags : ").append(tags));
     }
 
     @Null

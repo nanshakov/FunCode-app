@@ -35,11 +35,16 @@ public class TagsService {
         }
     }
 
+    public boolean isEmpty() {
+        return frequencies.isEmpty();
+    }
+
     public void invalidate(String text) {
         processedTags.add(text);
         tagsStore.remove(getLastTagByString(text));
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Null
     public String pop() {
         if (!tagsStore.isEmpty()) {

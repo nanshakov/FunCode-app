@@ -6,7 +6,9 @@ import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.configuration.Status;
 import com.nanshakov.lib.src.cue.lang.stop.StopWords;
 import com.nanshakov.parser.integrations.BaseIntegration;
-
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
+import lombok.extern.log4j.Log4j2;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,21 +19,14 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-import javax.validation.constraints.Null;
-
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Metrics;
-import lombok.extern.log4j.Log4j2;
-
 @Log4j2
 public abstract class BaseIntegrationImpl implements BaseIntegration {
 
-    @Value("${type}")
-    String type;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired TagsService tagsService;
@@ -108,6 +103,11 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
                     .referrer("http://www.google.com")
                     .get();
         }
+    }
+
+    void printInfo() {
+        log.info(new StringBuilder()
+                .append("Module : ").append(getPlatform()).append("\n"));
     }
 
 }

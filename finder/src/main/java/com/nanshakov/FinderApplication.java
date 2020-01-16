@@ -2,8 +2,8 @@ package com.nanshakov;
 
 
 import com.nanshakov.parser.integrations.BaseIntegration;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,6 +19,8 @@ public class FinderApplication implements CommandLineRunner {
     private List<BaseIntegration> integrations;
     @Autowired
     private TaskExecutor taskExecutor;
+    @Value("${type}")
+    String type;
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(FinderApplication.class)
@@ -27,9 +29,13 @@ public class FinderApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         for (BaseIntegration integration : integrations) {
-            taskExecutor.execute(integration);
+            if (type.contains(integration.toString())) {
+                integration.printInfo();
+                taskExecutor.execute(integration);
+            }
+
         }
     }
 }
