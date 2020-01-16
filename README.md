@@ -17,5 +17,5 @@ create table metaV2
     alt           Nullable(String),
     author        Nullable(String)
 )
-    engine = Memory;
+    engine = ENGINE MergeTree() PARTITION BY toYYYYMM(datetime) ORDER BY (urlImgHash, contentHash) SETTINGS index_granularity=8192;
 `
