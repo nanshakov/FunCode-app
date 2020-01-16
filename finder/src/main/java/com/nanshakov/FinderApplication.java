@@ -29,7 +29,7 @@ public class FinderApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         for (BaseIntegration integration : integrations) {
-            //taskExecutor.execute(integration);
+            taskExecutor.execute(integration);
         }
     }
 }
