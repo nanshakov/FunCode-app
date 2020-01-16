@@ -1,9 +1,13 @@
-#IFUNNY NineGag
+#IFUNNY,NineGag
 type: NineGag
 
 IFUNNY:
   download-url: "https://img.ifunny.co/images/"
   tags: "deutsch"
+  recursion:
+    enable: true
+    depth: 10000
+    duplicates-count: 50 #сколько должно быть дубликатов подряд, что бы произошло переключение тега.
 
 NineGag:
   download-url: "https://9gag.com/v1/search-posts?query="
@@ -11,7 +15,7 @@ NineGag:
   recursion:
     enable: true
     depth: 10000
-    duplicates-count: 100
+    duplicates-count: 50 #сколько должно быть дубликатов подряд, что бы произошло переключение тега.
 
 spring:
   datasource:
