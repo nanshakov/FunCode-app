@@ -62,8 +62,8 @@ public class KafkaListener {
             String name = contentHash + Utils.getExtension(post.getImgUrl());
             fileUploader.putObject(bucket, name, img);
             post.setUrlHash(hash);
-            post.setImg(Utils.copyUrlToByteArray(post.getImgUrl()));
-            post.setContentHash(Utils.calculateHashSha256(img));
+            post.setImg(img);
+            post.setContentHash(contentHash);
             post.setPathToContent(constructUrl(name));
             postMetaRepository.add(post);
             totalProcessed.increment();
