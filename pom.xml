@@ -1,61 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.2.RELEASE</version>
+        <relativePath/>
+    </parent>
+    <groupId>com.nanshakov</groupId>
     <artifactId>FunCode-app</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>finder</module>
+    </modules>
+    <properties>
+        <JRAW.version>1.1.0</JRAW.version>
+        <clickhouse-jdbc.version>0.2</clickhouse-jdbc.version>
+        <fluent-hc.version>4.5.10</fluent-hc.version>
+        <java.version>11</java.version>
+        <jsoup.version>1.12.1</jsoup.version>
+        <minio.version>6.0.11</minio.version>
+        <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
+        <twitter4j-core.version>[4.0,)</twitter4j-core.version>
+    </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <artifactId>jsoup</artifactId>
-                <groupId>org.jsoup</groupId>
-                <version>1.12.1</version>
-            </dependency>
-            <dependency>
-                <artifactId>minio</artifactId>
                 <groupId>io.minio</groupId>
-                <version>6.0.11</version>
-            </dependency>
-            <dependency>
-                <artifactId>clickhouse-jdbc</artifactId>
-                <groupId>ru.yandex.clickhouse</groupId>
-                <version>0.2</version>
-            </dependency>
-            <dependency>
-                <artifactId>twitter4j-core</artifactId>
-                <groupId>org.twitter4j</groupId>
-                <version>[4.0,)</version>
+                <artifactId>minio</artifactId>
+                <version>${minio.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.dean.jraw</groupId>
                 <artifactId>JRAW</artifactId>
-                <version>1.1.0</version>
+                <version>${JRAW.version}</version>
             </dependency>
             <dependency>
-                <artifactId>fluent-hc</artifactId>
                 <groupId>org.apache.httpcomponents</groupId>
-                <version>4.5.10</version>
+                <artifactId>fluent-hc</artifactId>
+                <version>${fluent-hc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.twitter4j</groupId>
+                <artifactId>twitter4j-core</artifactId>
+                <version>${twitter4j-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.yandex.clickhouse</groupId>
+                <artifactId>clickhouse-jdbc</artifactId>
+                <version>${clickhouse-jdbc.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
-    <groupId>com.nanshakov</groupId>
-    <modelVersion>4.0.0</modelVersion>
-    <modules>
-        <module>finder</module>
-    </modules>
-
-    <packaging>pom</packaging>
-
-    <parent>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <groupId>org.springframework.boot</groupId>
-        <relativePath/>
-        <version>2.2.2.RELEASE</version> <!-- lookup parent from repository -->
-    </parent>
-
-    <properties>
-        <java.version>11</java.version>
-        <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
-    </properties>
-
-    <version>1.0-SNAPSHOT</version>
 </project>
