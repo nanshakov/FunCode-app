@@ -64,6 +64,7 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
         String hash = calculateHash(post);
         total.increment();
         if (!existInRedis(hash)) {
+            duplicatesCount = 0;
             kafkaTemplate.send(topic, hash, post);
             return true;
         } else {
@@ -78,6 +79,10 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
     boolean checkLang(String str) {
         if (!str.isEmpty()) {
             if (!StopWords.German.isStopWord(str)) {
+                drop.increment();
+                return false;
+            }
+            if (StopWords.German.stopWordCount(str) < StopWords.English.stopWordCount(str)) {
                 drop.increment();
                 return false;
             }

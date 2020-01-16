@@ -6,8 +6,7 @@ import com.nanshakov.common.dto.Type;
 import com.nanshakov.common.repo.PostMetaRepository;
 import com.nanshakov.controllers.response.Post;
 import com.nanshakov.controllers.response.Result;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -17,6 +16,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
@@ -32,7 +34,7 @@ public class ClickHouseDao implements PostMetaRepository {
     public boolean containsByUrl(String hash) {
         return jdbcTemplate.queryForObject(
                 "select count(urlImgHash) from " + schema + " where urlImgHash=?",
-                new Object[]{hash}, Boolean.class);
+                new Object[] {hash}, Boolean.class);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -40,12 +42,12 @@ public class ClickHouseDao implements PostMetaRepository {
     public boolean containsByContent(String hash) {
         return jdbcTemplate.queryForObject(
                 "select count(contentHash) from " + schema + " where contentHash=?",
-                new Object[]{hash}, Boolean.class);
+                new Object[] {hash}, Boolean.class);
     }
 
     @Override
     public int add(PostDto p) {
-        log.info("Saving to DB {}", p);
+        log.trace("Saving to DB {}", p);
         SimpleJdbcInsert simpleJdbcInsert =
                 new SimpleJdbcInsert(jdbcTemplate).withTableName(schema);
         Map<String, Object> parameters = new HashMap<>();
@@ -69,7 +71,7 @@ public class ClickHouseDao implements PostMetaRepository {
     public Post findById(String id) {
         return jdbcTemplate.queryForObject(
                 "select * from " + schema + " where urlImgHash=?",
-                new Object[]{id}, Post.class);
+                new Object[] {id}, Post.class);
     }
 
     @Override
@@ -79,9 +81,10 @@ public class ClickHouseDao implements PostMetaRepository {
         return Result.builder()
                 .currentPage(pageNum)
                 .pages(pages)
+                .count(limit)
                 .posts(jdbcTemplate.query(
                         "select * from " + schema + " ORDER BY datetime DESC LIMIT ?, ?",
-                        new Object[]{--pageNum * limit, limit}, (rs, rowNum) ->
+                        new Object[] {--pageNum * limit, limit}, (rs, rowNum) ->
                                 Post.builder()
                                         .alt(rs.getString("alt"))
                                         .author(rs.getString("author"))
