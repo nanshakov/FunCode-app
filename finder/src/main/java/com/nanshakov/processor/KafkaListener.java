@@ -4,16 +4,14 @@ import com.nanshakov.common.Utils;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.repo.FileUploader;
 import com.nanshakov.common.repo.PostMetaRepository;
-
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Service
 @Log4j2
@@ -46,13 +44,13 @@ public class KafkaListener {
         log.trace("=> consumed {}", rawMessage.value());
         String hash = rawMessage.key();
         PostDto post = rawMessage.value();
-        //simple hash by url
+        //быстрый поиск по хешу url
         if (!postMetaRepository.containsByUrl(hash)) {
             try {
                 log.trace("Downloading...{}", post.getImgUrl());
                 byte[] img = Utils.copyUrlToByteArray(post.getImgUrl());
                 String contentHash = Utils.calculateHashSha256(img);
-                //check by content hash
+                //долгий поиск (за счет загрузки) по хешу кнтента
                 if (!postMetaRepository.containsByContent(contentHash)) {
                     String fname = contentHash + Utils.getExtension(post.getImgUrl());
                     fileUploader.putObject(bucket, fname, img);
