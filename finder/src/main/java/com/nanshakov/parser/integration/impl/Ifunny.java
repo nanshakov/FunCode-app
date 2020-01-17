@@ -110,6 +110,10 @@ public class Ifunny extends BaseIntegrationImpl {
                 if (likes != null) {
                     postBuilder.likes(Long.parseLong(likes));
                 }
+                var comments = extendedPost.select(".post-actions__item").first().text();
+                if (comments != null) {
+                    postBuilder.comments(resolveComments(comments));
+                }
             }
 
             return postBuilder
@@ -128,6 +132,13 @@ public class Ifunny extends BaseIntegrationImpl {
             return LocalDateTime.now().minusDays(Long.parseLong(datetime.substring(0, datetime.length() - 2)));
         }
         return null;
+    }
+
+    private long resolveComments(String commentCount) {
+        if (commentCount.endsWith("k")) {
+            return Long.parseLong(commentCount.substring(0, commentCount.length() - 2));
+        }
+        return 0;
     }
 
     private Document resolvePost(String url) {
