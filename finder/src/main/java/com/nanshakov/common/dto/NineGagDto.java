@@ -109,6 +109,22 @@ public class NineGagDto {
 
         @JsonProperty("image700")
         private Image700 image700;
+        @JsonProperty("Image460sv")
+        private Image460sv image460sv;
+
+        public boolean isContainsVideo() {
+            if (image460sv != null && image460sv.getVp8Url() != null) {
+                return true;
+            }
+            return false;
+        }
+
+        public String getUrlVideo() {
+            if (image460sv != null && image460sv.getVp8Url() != null) {
+                return image460sv.getVp8Url();
+            }
+            return "";
+        }
 
     }
 
@@ -123,6 +139,14 @@ public class NineGagDto {
         private String url;
         @JsonProperty("webpUrl")
         private String webpUrl;
+
+    }
+
+    @lombok.Data
+    public static class Image460sv {
+
+        @JsonProperty("vp8Url")
+        private String vp8Url;
 
     }
 }

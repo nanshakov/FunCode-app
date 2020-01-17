@@ -145,12 +145,22 @@ public class NineGag extends BaseIntegrationImpl {
 
     @Null
     private PostDto parse(NineGagDto.Post el) {
+        String imgUrl;
+        Type type;
+        if (el.getImages().isContainsVideo()) {
+            imgUrl = el.getImages().getUrlVideo();
+            type = Type.VIDEO;
+        } else {
+            imgUrl = el.getImages().getImage700().getUrl();
+            type = Type.PHOTO;
+        }
         return PostDto.builder()
                 .url(el.getUrl())
-                .imgUrl(el.getImages().getImage700().getUrl())
+                .imgUrl(imgUrl)
                 .alt(el.getTitle())
                 .from(getPlatform())
-                .type(Type.PHOTO)
+                .type(type)
+                .author(el.getPostSection().getName())
                 .likes(el.getUpVoteCount())
                 .dislikes(el.getDownVoteCount())
                 .comments(el.getCommentsCount())
