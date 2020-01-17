@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class ClickHouseDao implements PostMetaRepository {
     @Value("${schema}")
     private String schema;
 
+    private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     @SuppressWarnings("ConstantConditions")
     @Override
     public boolean containsByUrl(String hash) {
@@ -52,7 +54,7 @@ public class ClickHouseDao implements PostMetaRepository {
         parameters.put("sourceUrl", p.getUrl());
         parameters.put("contentHash", p.getContentHash());
         parameters.put("source", p.getFrom());
-        parameters.put("datetime", p.getDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
+        parameters.put("datetime", p.getDateTime().format(dateTimeFormatter));
         parameters.put("pathToContent", p.getPathToContent());
         parameters.put("likes", p.getLikes());
         parameters.put("dislikes", p.getDislikes());
@@ -85,7 +87,7 @@ public class ClickHouseDao implements PostMetaRepository {
                                         .alt(rs.getString("alt"))
                                         .author(rs.getString("author"))
                                         .comments(rs.getLong("comments"))
-                                        .dateTime(null)
+                                        .dateTime(LocalDateTime.parse(rs.getString("datetime"), dateTimeFormatter))
                                         .dislikes(rs.getLong("dislikes"))
                                         .likes(rs.getLong("likes"))
                                         //.from(rs.getString("source"))
