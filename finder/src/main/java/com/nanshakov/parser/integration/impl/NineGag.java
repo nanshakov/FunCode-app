@@ -154,6 +154,7 @@ public class NineGag extends BaseIntegrationImpl {
                 .likes(el.getUpVoteCount())
                 .dislikes(el.getDownVoteCount())
                 .comments(el.getCommentsCount())
+                .title(el.getTitle())
                 .dateTime(new Timestamp(el.getCreationTs() * 1000L).toLocalDateTime())
                 .build();
     }

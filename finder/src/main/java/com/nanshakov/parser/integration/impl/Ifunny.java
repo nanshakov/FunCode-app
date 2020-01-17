@@ -83,8 +83,8 @@ public class Ifunny extends BaseIntegrationImpl {
 
         String dataSrc = img.attr("data-src");
         if (dataSrc != null && !dataSrc.isEmpty()) {
-            String[] split = dataSrc.split("/");
-            if (split.length != 5) {
+            var split = dataSrc.split("/");
+            if (split.length < 6) {
                 throw new IllegalStateException("Error while parsing url " + dataSrc);
             }
             String url = downloadUrl + split[5];
@@ -104,4 +104,11 @@ public class Ifunny extends BaseIntegrationImpl {
         return null;
     }
 
+    private Document resolvePost(String url) {
+        try {
+            return call(url, Connection.Method.GET);
+        } catch (IOException e) {
+            return null;
+        }
+    }
 }

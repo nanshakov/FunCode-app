@@ -40,6 +40,8 @@ public class PostDto implements Serializable {
 
     String alt;
 
+    String title;
+
     Platform from;
 
     Type type;

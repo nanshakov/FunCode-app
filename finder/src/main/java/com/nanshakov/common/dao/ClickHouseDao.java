@@ -15,6 +15,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -28,7 +30,27 @@ public class ClickHouseDao implements PostMetaRepository {
     private String schema;
 
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    @SuppressWarnings("ConstantConditions")
+
+    @PostConstruct
+    private void postConstruct() {
+//        jdbcTemplate.execute("create TABLE " + schema + " IF NOT EXISTS "
+//                + "("
+//                + "    'urlImgHash'    String,"
+//                + "    'sourceUrl'     String,"
+//                + "    'contentHash'   String,"
+//                + "    'source'        String,"
+//                + "    'datetime'      DateTime,"
+//                + "    'pathToContent' String,"
+//                + "    'likes'         Nullable(Int32),"
+//                + "    'dislikes'      Nullable(Int32),"
+//                + "    'comments'      Nullable(Int32),"
+//                + "    'alt'           Nullable(String),"
+//                + "    'title'         Nullable(String),"
+//                + "    'author'        Nullable(String)"
+//                + ")\n"
+//                + "    engine = MergeTree() PARTITION BY toYYYYMM(datetime) ORDER BY ('urlImgHash', 'contentHash');");
+    }
+
     @Override
     public boolean containsByUrl(String hash) {
         return jdbcTemplate.queryForObject(
