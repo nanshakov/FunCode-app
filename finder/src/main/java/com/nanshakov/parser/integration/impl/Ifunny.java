@@ -112,7 +112,7 @@ public class Ifunny extends BaseIntegrationImpl {
                     if (likes != null) {
                         postBuilder.likes(Long.parseLong(likes));
                     }
-                    var comments = extendedPost.select(".post-actions__item").first().text();
+                    var comments = extendedPost.select(".post-actions__item").get(1).text();
                     if (comments != null) {
                         postBuilder.comments(resolveComments(comments));
                     }
