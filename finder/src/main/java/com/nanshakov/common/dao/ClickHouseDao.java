@@ -1,8 +1,6 @@
 package com.nanshakov.common.dao;
 
-import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
-import com.nanshakov.common.dto.Type;
 import com.nanshakov.common.repo.PostMetaRepository;
 import com.nanshakov.controller.response.Post;
 import com.nanshakov.controller.response.Result;
@@ -90,11 +88,10 @@ public class ClickHouseDao implements PostMetaRepository {
                                         .dateTime(null)
                                         .dislikes(rs.getLong("dislikes"))
                                         .likes(rs.getLong("likes"))
-                                        .from(Platform.IFUNNY)
+                                        //.from(rs.getString("source"))
                                         .id(rs.getString("contentHash"))
                                         .pathToContent(rs.getString("pathToContent"))
                                         .url(rs.getString("sourceUrl"))
-                                        .type(Type.PHOTO)
                                         .build()
                 )).build();
     }

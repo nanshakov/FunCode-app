@@ -83,11 +83,14 @@ public class Ifunny extends BaseIntegrationImpl {
 
         String dataSrc = img.attr("data-src");
         if (dataSrc != null && !dataSrc.isEmpty()) {
-            //TODO [экстремальное программирование] хорошо бы как-то проверить что их и правда 5...
-            String url = downloadUrl + dataSrc.split("/")[5];
+            String[] split = dataSrc.split("/");
+            if (split.length != 5) {
+                throw new IllegalStateException("Error while parsing url " + dataSrc);
+            }
+            String url = downloadUrl + split[5];
             //ссылка на пост
             String href = "https://ifunny.co/" + el.select("a[href]").attr("href");
-            //список тегов
+            //теги
             String alt = img.attr("alt");
 
             return PostDto.builder()
