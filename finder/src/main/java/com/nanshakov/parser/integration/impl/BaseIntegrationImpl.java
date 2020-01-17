@@ -80,7 +80,7 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
                 dropCounter.increment();
                 return false;
             }
-            if (StopWords.German.stopWordCount(str) < StopWords.English.stopWordCount(str)) {
+            if (StopWords.German.stopWordCount(str) <= StopWords.English.stopWordCount(str)) {
                 dropCounter.increment();
                 return false;
             }
