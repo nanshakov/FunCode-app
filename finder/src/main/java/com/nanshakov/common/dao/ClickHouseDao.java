@@ -76,7 +76,7 @@ public class ClickHouseDao implements PostMetaRepository {
         parameters.put("sourceUrl", p.getUrl());
         parameters.put("contentHash", p.getContentHash());
         parameters.put("source", p.getFrom());
-        parameters.put("datetime", p.getDateTime().format(dateTimeFormatter));
+        if (p.getDateTime() != null) { parameters.put("datetime", p.getDateTime().format(dateTimeFormatter)); }
         parameters.put("pathToContent", p.getPathToContent());
         parameters.put("likes", p.getLikes());
         parameters.put("dislikes", p.getDislikes());

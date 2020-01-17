@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.Null;
 
@@ -92,14 +93,39 @@ public class Ifunny extends BaseIntegrationImpl {
             String href = "https://ifunny.co/" + el.select("a[href]").attr("href");
             //теги
             String alt = img.attr("alt");
+            Document extendedPost = resolvePost(href);
+            var postBuilder = PostDto.builder();
+            if (extendedPost != null) {
+                var info = extendedPost.select(".metapanel__user-nick").first();
+                String userName = info.childNode(0).toString().trim();
+                String date = info.select(".metapanel__time").text();
+                if (date != null) {
+                    postBuilder.author(userName);
+                    postBuilder.dateTime(resolveDateTime(date));
+                }
+                var likes = extendedPost.select(".metapanel__meta")
+                        .first()
+                        .select("post-actions")
+                        .attr("initial-smiles");
+                if (likes != null) {
+                    postBuilder.likes(Long.parseLong(likes));
+                }
+            }
 
-            return PostDto.builder()
+            return postBuilder
                     .imgUrl(url)
                     .url(href)
                     .alt(alt)
                     .from(getPlatform())
                     .type(Type.PHOTO)
                     .build();
+        }
+        return null;
+    }
+
+    private LocalDateTime resolveDateTime(String datetime) {
+        if (datetime.endsWith("d")) {
+            return LocalDateTime.now().minusDays(Long.parseLong(datetime.substring(0, datetime.length() - 2)));
         }
         return null;
     }
