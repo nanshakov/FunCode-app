@@ -93,26 +93,29 @@ public class Ifunny extends BaseIntegrationImpl {
             String href = "https://ifunny.co/" + el.select("a[href]").attr("href");
             //теги
             String alt = img.attr("alt");
-            Document extendedPost = resolvePost(href);
             var postBuilder = PostDto.builder();
-            if (extendedPost != null) {
-                var info = extendedPost.select(".metapanel__user-nick").first();
-                String userName = info.childNode(0).toString().trim();
-                String date = info.select(".metapanel__time").text();
-                if (date != null) {
-                    postBuilder.author(userName);
-                    postBuilder.dateTime(resolveDateTime(date));
-                }
-                var likes = extendedPost.select(".metapanel__meta")
-                        .first()
-                        .select("post-actions")
-                        .attr("initial-smiles");
-                if (likes != null) {
-                    postBuilder.likes(Long.parseLong(likes));
-                }
-                var comments = extendedPost.select(".post-actions__item").first().text();
-                if (comments != null) {
-                    postBuilder.comments(resolveComments(comments));
+            //если есть ',' то это список тегов, в них нет смысла искать язык
+            if (!alt.contains(",") && checkLang(alt)) {
+                Document extendedPost = resolvePost(href);
+                if (extendedPost != null) {
+                    var info = extendedPost.select(".metapanel__user-nick").first();
+                    String userName = info.childNode(0).toString().trim();
+                    String date = info.select(".metapanel__time").text();
+                    if (date != null) {
+                        postBuilder.author(userName);
+                        postBuilder.dateTime(resolveDateTime(date));
+                    }
+                    var likes = extendedPost.select(".metapanel__meta")
+                            .first()
+                            .select("post-actions")
+                            .attr("initial-smiles");
+                    if (likes != null) {
+                        postBuilder.likes(Long.parseLong(likes));
+                    }
+                    var comments = extendedPost.select(".post-actions__item").first().text();
+                    if (comments != null) {
+                        postBuilder.comments(resolveComments(comments));
+                    }
                 }
             }
 
@@ -131,7 +134,7 @@ public class Ifunny extends BaseIntegrationImpl {
         if (datetime.endsWith("d")) {
             return LocalDateTime.now().minusDays(Long.parseLong(datetime.substring(0, datetime.length() - 2)));
         }
-        return null;
+        return LocalDateTime.now();
     }
 
     private long resolveComments(String commentCount) {
