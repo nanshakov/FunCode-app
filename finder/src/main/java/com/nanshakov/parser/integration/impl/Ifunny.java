@@ -124,10 +124,17 @@ public class Ifunny extends BaseIntegrationImpl {
                     .url(href)
                     .alt(alt)
                     .from(getPlatform())
-                    .type(Type.PHOTO)
+                    .type(resolveType(el.select("a[data-type]").attr("data-type")))
                     .build();
         }
         return null;
+    }
+
+    private Type resolveType(String type) {
+        if (type.equals("video")) {
+            return Type.VIDEO;
+        }
+        return Type.PHOTO;
     }
 
     private LocalDateTime resolveDateTime(String datetime) {
