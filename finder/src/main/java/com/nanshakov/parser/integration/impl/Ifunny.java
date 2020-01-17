@@ -138,7 +138,7 @@ public class Ifunny extends BaseIntegrationImpl {
         if (commentCount.endsWith("k")) {
             return (long) (Double.parseDouble(commentCount.substring(0, commentCount.length() - 2)) * 1000);
         }
-        return 0;
+        return Long.parseLong(commentCount);
     }
 
     private Document resolvePost(String url) {
