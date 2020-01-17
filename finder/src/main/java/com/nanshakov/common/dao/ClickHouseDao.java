@@ -68,6 +68,7 @@ public class ClickHouseDao implements PostMetaRepository {
 
     @Override
     public int add(PostDto p) {
+        if (p.getDateTime() == null) { return 0; }
         log.trace("Saving to DB {}", p);
         SimpleJdbcInsert simpleJdbcInsert =
                 new SimpleJdbcInsert(jdbcTemplate).withTableName(schema);

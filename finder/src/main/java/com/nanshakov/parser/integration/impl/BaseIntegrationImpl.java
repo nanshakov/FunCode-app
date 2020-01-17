@@ -63,7 +63,7 @@ public abstract class BaseIntegrationImpl implements BaseIntegration {
         successfulCounter.increment();
         if (!existInRedis(hash)) {
             duplicatesCount = 0;
-            //kafkaTemplate.send(topic, hash, post);
+            kafkaTemplate.send(topic, hash, post);
             return true;
         } else {
             log.trace("Post {} with hash {} found in redis, do nothing", post, hash);
