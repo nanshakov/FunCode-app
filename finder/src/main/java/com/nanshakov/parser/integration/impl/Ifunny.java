@@ -136,7 +136,7 @@ public class Ifunny extends BaseIntegrationImpl {
 
     private long resolveComments(String commentCount) {
         if (commentCount.endsWith("k")) {
-            return Long.parseLong(commentCount.substring(0, commentCount.length() - 2));
+            return (long) (Double.parseDouble(commentCount.substring(0, commentCount.length() - 2)) * 1000);
         }
         return 0;
     }
