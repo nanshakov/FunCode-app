@@ -4,14 +4,16 @@ import com.nanshakov.common.Utils;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.repo.FileUploader;
 import com.nanshakov.common.repo.PostMetaRepository;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Metrics;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
@@ -29,11 +31,11 @@ public class KafkaListener {
     @Value("${s3.bucket}")
     private String bucket;
 
-    private Counter totalProcessed
-            = Metrics.counter("processing.total", "processing", "total");
-    private Counter duplicates
+    private Counter successfulProcessedCounter
+            = Metrics.counter("processing.successful", "processing", "successful");
+    private Counter duplicatesCounter
             = Metrics.counter("processing.duplicates", "processing", "duplicates");
-    private Counter processingErrors
+    private Counter processingErrorsCounter
             = Metrics.counter("processing.error", "processing", "error");
 
     @org.springframework.kafka.annotation.KafkaListener(topics = "${spring.kafka.topic}")
@@ -46,7 +48,7 @@ public class KafkaListener {
         PostDto post = rawMessage.value();
         //быстрый поиск по хешу url
         if (postMetaRepository.containsByUrl(hash)) {
-            duplicates.increment();
+            duplicatesCounter.increment();
             log.trace("{} found in clickhouse, do nothing", rawMessage.key());
             return;
         }
@@ -56,7 +58,7 @@ public class KafkaListener {
             String contentHash = Utils.calculateHashSha256(img);
             //долгий поиск (за счет загрузки) по хешу кнтента
             if (postMetaRepository.containsByContent(contentHash)) {
-                duplicates.increment();
+                duplicatesCounter.increment();
                 return;
             }
             String name = contentHash + Utils.getExtension(post.getImgUrl());
@@ -66,9 +68,9 @@ public class KafkaListener {
             post.setContentHash(contentHash);
             post.setPathToContent(constructUrl(name));
             postMetaRepository.add(post);
-            totalProcessed.increment();
+            successfulProcessedCounter.increment();
         } catch (Exception e) {
-            processingErrors.increment();
+            processingErrorsCounter.increment();
             log.error(e);
         }
 

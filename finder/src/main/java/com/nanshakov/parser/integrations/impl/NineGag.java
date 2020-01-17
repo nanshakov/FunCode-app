@@ -6,20 +6,23 @@ import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
 import com.nanshakov.lib.src.cue.lang.stop.StopWords;
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+
 import org.jsoup.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.validation.constraints.Null;
+
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
@@ -134,7 +137,7 @@ public class NineGag extends BaseIntegrationImpl {
         } catch (IOException e) {
             //часто падает с ошибкой парсинга, из за кривых данных от сервера
             //log.error(e);
-            errors.increment();
+            errorsCounter.increment();
             nextId += 10;
         }
         return null;
