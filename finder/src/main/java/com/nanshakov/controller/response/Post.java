@@ -1,14 +1,15 @@
-package com.nanshakov.controllers.response;
+package com.nanshakov.controller.response;
 
 import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.Type;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor

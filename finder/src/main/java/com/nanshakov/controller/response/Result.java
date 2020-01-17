@@ -1,4 +1,4 @@
-package com.nanshakov.controllers.response;
+package com.nanshakov.controller.response;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.nanshakov.parser.integrations.impl;
+package com.nanshakov.parser.integration.impl;
 
 import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;

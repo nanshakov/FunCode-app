@@ -1,11 +1,11 @@
-package com.nanshakov.parser.integrations.impl;
+package com.nanshakov.parser.integration.impl;
 
 import com.nanshakov.common.TagsService;
 import com.nanshakov.common.Utils;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.configuration.Status;
 import com.nanshakov.lib.src.cue.lang.stop.StopWords;
-import com.nanshakov.parser.integrations.BaseIntegration;
+import com.nanshakov.parser.integration.BaseIntegration;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;

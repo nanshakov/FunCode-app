@@ -1,8 +1,8 @@
 package com.nanshakov.common.repo;
 
 import com.nanshakov.common.dto.PostDto;
-import com.nanshakov.controllers.response.Post;
-import com.nanshakov.controllers.response.Result;
+import com.nanshakov.controller.response.Post;
+import com.nanshakov.controller.response.Result;
 
 public interface PostMetaRepository {
 

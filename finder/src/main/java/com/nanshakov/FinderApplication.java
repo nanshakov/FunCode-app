@@ -1,7 +1,8 @@
 package com.nanshakov;
 
 
-import com.nanshakov.parser.integrations.BaseIntegration;
+import com.nanshakov.parser.integration.BaseIntegration;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
