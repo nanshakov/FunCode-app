@@ -87,8 +87,8 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
                 continue;
             }
 
-            for (SingleObject p : extractElement(rawPosts)) {
-                PostDto post = parse(p);
+            for (SingleObject singleObject : extractElement(rawPosts)) {
+                PostDto post = parse(singleObject);
                 if (isRecursionModeEnable) {
                     tagsService.addTags(post.getTags());
                 }
@@ -130,10 +130,10 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
     private void setNextTag() {
         duplicatesCount = 0;
         if (isRecursionModeEnable) {
+            log.trace("Tags: {}", tagsService.getTags());
             currentTag = tagsService.pop();
             page = 0;
             if (currentTag != null) {
-                log.info("Tags: {}", tagsService.getTags());
                 log.info("Current tag is: {}", currentTag);
             } else {
                 log.warn("Tag is null!");
@@ -151,7 +151,7 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
         successfulCounter.increment();
         if (!existInRedis(hash)) {
             duplicatesCount = 0;
-            kafkaTemplate.send(topic, hash, post);
+            //kafkaTemplate.send(topic, hash, post);
             return true;
         } else {
             log.trace("Post {} with hash {} found in redis, do nothing", post, hash);
