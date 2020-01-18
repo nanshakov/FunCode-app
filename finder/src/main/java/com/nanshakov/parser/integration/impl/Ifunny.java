@@ -21,7 +21,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-public class Ifunny extends BaseIntegrationImpl {
+public class Ifunny extends BaseIntegrationImpl<Document, P> {
 
     private String nextId = "1567508062";
     @Value("${IFUNNY.tags}")
@@ -61,7 +61,7 @@ public class Ifunny extends BaseIntegrationImpl {
     }
 
     @Null
-    private Document getPage(long pageNum) {
+    Document getPage(long pageNum) {
         try {
             StringBuilder url = new StringBuilder();
             url.append("https://ifunny.co/api/tags/")

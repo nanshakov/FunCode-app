@@ -1,14 +1,21 @@
 package com.nanshakov.common;
 
-import lombok.Builder;
-import lombok.Data;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.validation.constraints.Null;
-import java.util.*;
+
+import lombok.Builder;
+import lombok.Data;
 
 @Service
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -23,6 +30,10 @@ public class TagsService {
         for (String tag : tags) {
             push(tag);
         }
+    }
+
+    public Set<String> getTags() {
+        return frequencies.keySet();
     }
 
     public void push(String text) {
@@ -65,6 +76,7 @@ public class TagsService {
     @Data
     @Builder
     public static class Tag implements Comparable<Tag> {
+
         String text;
         int count;
 
