@@ -36,7 +36,6 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
-    String downloadUrl;
     String currentTag;
     int page = 0;
 
@@ -65,12 +64,11 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
             String tags,
             boolean isRecursionModeEnable,
             long recursionDepth,
-            long duplicatesCountLimit, String downloadUrl) {
+            long duplicatesCountLimit) {
         this.tags = tags;
         this.isRecursionModeEnable = isRecursionModeEnable;
         this.recursionDepth = recursionDepth;
         this.duplicatesCountLimit = duplicatesCountLimit;
-        this.downloadUrl = downloadUrl;
     }
 
     @Override

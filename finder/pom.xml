@@ -111,6 +111,10 @@
             <groupId>ru.yandex.clickhouse</groupId>
             <artifactId>clickhouse-jdbc</artifactId>
         </dependency>
+        <dependency>
+            <artifactId>JRAW</artifactId>
+            <groupId>net.dean.jraw</groupId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

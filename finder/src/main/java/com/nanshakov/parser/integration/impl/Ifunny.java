@@ -34,7 +34,7 @@ public class Ifunny extends BaseIntegrationImpl<Document, Element> {
 
     @PostConstruct
     public void postConstruct() {
-        addParams(tags, false, 100, 100, downloadUrl);
+        addParams(tags, false, 100, 100);
     }
 
     @Override

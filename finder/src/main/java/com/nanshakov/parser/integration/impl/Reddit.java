@@ -6,6 +6,14 @@ import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
 
+import net.dean.jraw.RedditClient;
+import net.dean.jraw.http.NetworkAdapter;
+import net.dean.jraw.http.OkHttpNetworkAdapter;
+import net.dean.jraw.http.UserAgent;
+import net.dean.jraw.models.Account;
+import net.dean.jraw.oauth.Credentials;
+import net.dean.jraw.oauth.OAuthHelper;
+
 import org.jsoup.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,30 +33,48 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-public class NineGag extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
+public class Reddit extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
 
     @Autowired
     private ObjectMapper objectMapper;
-    @Value("${NineGag.tags}")
+    @Value("${Reddit.tags}")
     private String tags;
-    @Value("${NineGag.recursion.enable:false}")
+    @Value("${Reddit.recursion.enable:false}")
     private boolean isRecursionModeEnable;
-    @Value("${NineGag.recursion.depth:1000}")
+    @Value("${Reddit.recursion.depth:1000}")
     private long recursionDepth;
-    @Value("${NineGag.recursion.duplicates-count:100}")
+    @Value("${Reddit.recursion.duplicates-count:100}")
     private long duplicatesCountLimit;
-    @Value("${NineGag.download-url}")
+    @Value("${Reddit.download-url}")
     private String downloadUrl;
 
+    @Value("${Reddit.username}")
+    private String username;
+    @Value("${Reddit.password}")
+    private String password;
+    @Value("${Reddit.clientId}")
+    private String clientId;
+    @Value("${Reddit.clientSecret}")
+    private String clientSecret;
 
     @PostConstruct
     public void postConstruct() {
         addParams(tags, isRecursionModeEnable, recursionDepth, duplicatesCountLimit);
+        // Create our credentials
+        Credentials credentials = Credentials.script(username, password,
+                clientId, clientSecret);
+        // This is what really sends HTTP requests
+        NetworkAdapter adapter = new OkHttpNetworkAdapter(
+                new UserAgent("nanshakov", "com.nanshakov", "v0.1", "nanshakov"));
+        // Authenticate and get a RedditClient instance
+        RedditClient reddit = OAuthHelper.automatic(adapter, credentials);
+        Account me = reddit.me().query().getAccount();
+
     }
 
     @Override
     public Platform getPlatform() {
-        return Platform.NineGag;
+        return Platform.Reddit;
     }
 
     @Null
@@ -68,13 +94,6 @@ public class NineGag extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
 
     public int incrementPage() {
         return page + 10;
-    }
-
-    public List<String> extractTags(NineGagDto.Post el) {
-        return el.getTags()
-                .stream()
-                .map(t -> t.getUrl().replace("/tag/", "").toLowerCase())
-                .collect(Collectors.toList());
     }
 
     public @Null Integer getNextPage(NineGagDto p) {
@@ -122,6 +141,13 @@ public class NineGag extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
 
     @NonNull List<NineGagDto.Post> extractElement(NineGagDto p) {
         return p.getData().getPosts();
+    }
+
+    public List<String> extractTags(NineGagDto.Post el) {
+        return el.getTags()
+                .stream()
+                .map(t -> t.getUrl().replace("/tag/", "").toLowerCase())
+                .collect(Collectors.toList());
     }
 
     @Null
