@@ -18,16 +18,11 @@ NineGag:
     duplicates-count: 50 #сколько должно быть дубликатов подряд, что бы произошло переключение тега.
 
 Reddit:
-  download-url: ""
-  tags: "deutsch"
+  tags: "asozialesnetzwerk,ich_iel,kreiswichs,Lustig,NichtDerPostillon,schland,wasletztepreis"
   username: "nanshakov"
   password: "112233"
   clientId: "zCfokV2al_OClQ"
   clientSecret: "qLckFw3cI4-546QhO0yZLouWiDQ"
-  recursion:
-    enable: true
-    depth: 10000
-    duplicates-count: 50 #сколько должно быть дубликатов подряд, что бы произошло переключение тега.
 
 spring:
   datasource:

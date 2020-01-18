@@ -1,7 +1,5 @@
 package com.nanshakov.parser.integration.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nanshakov.common.dto.NineGagDto;
 import com.nanshakov.common.dto.Platform;
 import com.nanshakov.common.dto.PostDto;
 import com.nanshakov.common.dto.Type;
@@ -10,20 +8,20 @@ import net.dean.jraw.RedditClient;
 import net.dean.jraw.http.NetworkAdapter;
 import net.dean.jraw.http.OkHttpNetworkAdapter;
 import net.dean.jraw.http.UserAgent;
-import net.dean.jraw.models.Account;
+import net.dean.jraw.models.Listing;
+import net.dean.jraw.models.Submission;
+import net.dean.jraw.models.SubredditSort;
+import net.dean.jraw.models.TimePeriod;
 import net.dean.jraw.oauth.Credentials;
 import net.dean.jraw.oauth.OAuthHelper;
+import net.dean.jraw.pagination.DefaultPaginator;
 
-import org.jsoup.Connection;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.Null;
@@ -33,20 +31,10 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-public class Reddit extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
+public class Reddit extends BaseIntegrationImpl<Object, Object> {
 
-    @Autowired
-    private ObjectMapper objectMapper;
     @Value("${Reddit.tags}")
     private String tags;
-    @Value("${Reddit.recursion.enable:false}")
-    private boolean isRecursionModeEnable;
-    @Value("${Reddit.recursion.depth:1000}")
-    private long recursionDepth;
-    @Value("${Reddit.recursion.duplicates-count:100}")
-    private long duplicatesCountLimit;
-    @Value("${Reddit.download-url}")
-    private String downloadUrl;
 
     @Value("${Reddit.username}")
     private String username;
@@ -57,9 +45,11 @@ public class Reddit extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
     @Value("${Reddit.clientSecret}")
     private String clientSecret;
 
+    RedditClient redditClient;
+
     @PostConstruct
     public void postConstruct() {
-        addParams(tags, isRecursionModeEnable, recursionDepth, duplicatesCountLimit);
+        addParams(tags, false, 0, 0);
         // Create our credentials
         Credentials credentials = Credentials.script(username, password,
                 clientId, clientSecret);
@@ -67,9 +57,51 @@ public class Reddit extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
         NetworkAdapter adapter = new OkHttpNetworkAdapter(
                 new UserAgent("nanshakov", "com.nanshakov", "v0.1", "nanshakov"));
         // Authenticate and get a RedditClient instance
-        RedditClient reddit = OAuthHelper.automatic(adapter, credentials);
-        Account me = reddit.me().query().getAccount();
+        redditClient = OAuthHelper.automatic(adapter, credentials);
+    }
 
+    @Override
+    public void run() {
+        while (!tagsService.isEmpty()) {
+            try {
+                DefaultPaginator<Submission> paginator = redditClient.subreddit(currentTag)
+                        .posts()
+                        .sorting(SubredditSort.NEW)
+                        .timePeriod(TimePeriod.ALL)
+                        .limit(50)
+                        .build();
+
+                for (Listing<Submission> nextPage : paginator) {
+                    for (Submission s : nextPage.getChildren()) {
+                        if (s.getUrl().endsWith("jpg") || s.getUrl().endsWith("png")) {
+                            var post = PostDto.builder()
+                                    .url("https://www.reddit.com" + s.getPermalink())
+                                    .imgUrl(s.getUrl())
+                                    .alt(s.getLinkFlairText())
+                                    .from(getPlatform())
+                                    .type(Type.PHOTO)
+                                    .checkLangNeeded(true)
+                                    .author(s.getAuthor())
+                                    .likes(s.getVote().ordinal())
+                                    .comments(s.getCommentCount())
+                                    .title(s.getTitle())
+                                    .dateTime(new Timestamp(s.getCreated().getTime()).toLocalDateTime())
+                                    .build();
+
+                            if (post.isCheckLangNeeded() && !checkLang(post.getAlt())) {
+                                continue;
+                            }
+                            sendToKafka(post);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.error(e);
+                errorsCounter.increment();
+            } finally {
+                currentTag = tagsService.pop();
+            }
+        }
     }
 
     @Override
@@ -77,85 +109,28 @@ public class Reddit extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
         return Platform.Reddit;
     }
 
-    @Null
-    public NineGagDto getPage() {
-        try {
-            StringBuilder url = new StringBuilder();
-            url.append(downloadUrl)
-                    .append(currentTag)
-                    .append("&c=")
-                    .append(page);
-            return objectMapper.readValue(call(url.toString(), Connection.Method.GET).body().text(), NineGagDto.class);
-        } catch (IOException e) {
-            return null;
-        }
-
+    @Override
+    Object getPage() {
+        throw new NotImplementedException("com.nanshakov.parser.integration.impl.Reddit.getPage");
     }
 
-    public int incrementPage() {
-        return page + 10;
+    @Override
+    @Null int incrementPage() {
+        throw new NotImplementedException("com.nanshakov.parser.integration.impl.Reddit.incrementPage");
     }
 
-    public @Null Integer getNextPage(NineGagDto p) {
-        if (p.getData().getNextCursor() == null) {
-            log.info("Switch by cursor (nextId) is null. End of data.");
-            return null;
-        }
-
-        //получаем новые id
-        var id = extractId(p.getData().getNextCursor());
-        if (id == null) {
-            log.info("Switch by wrong parsing nextId");
-        }
-        return id;
+    @Override
+    @Null Integer getNextPage(Object p) {
+        throw new NotImplementedException("com.nanshakov.parser.integration.impl.Reddit.getNextPage");
     }
 
-    @Null
-    PostDto parse(NineGagDto.Post el) {
-        String imgUrl;
-        Type type;
-        if (el.getImages().isContainsVideo()) {
-            imgUrl = el.getImages().getUrlVideo();
-            type = Type.VIDEO;
-        } else {
-            imgUrl = el.getImages().getImage700().getUrl();
-            type = Type.PHOTO;
-        }
-
-        return PostDto.builder()
-                .url(el.getUrl())
-                .tags(extractTags(el))
-                .imgUrl(imgUrl)
-                .alt(el.getTitle())
-                .from(getPlatform())
-                .type(type)
-                .checkLangNeeded(true)
-                .author(el.getPostSection().getName())
-                .likes(el.getUpVoteCount())
-                .dislikes(el.getDownVoteCount())
-                .comments(el.getCommentsCount())
-                .title(el.getTitle())
-                .dateTime(new Timestamp(el.getCreationTs() * 1000L).toLocalDateTime())
-                .build();
+    @Override
+    @NonNull PostDto parse(Object o) {
+        throw new NotImplementedException("com.nanshakov.parser.integration.impl.Reddit.parse");
     }
 
-    @NonNull List<NineGagDto.Post> extractElement(NineGagDto p) {
-        return p.getData().getPosts();
-    }
-
-    public List<String> extractTags(NineGagDto.Post el) {
-        return el.getTags()
-                .stream()
-                .map(t -> t.getUrl().replace("/tag/", "").toLowerCase())
-                .collect(Collectors.toList());
-    }
-
-    @Null
-    private Integer extractId(String str) {
-        if (str != null) {
-            String[] split = str.split(Pattern.quote("="));
-            if (split.length != 0) { return Integer.parseInt(split[split.length - 1]); }
-        }
-        return null;
+    @Override
+    @NonNull Collection<Object> extractElement(Object p) {
+        throw new NotImplementedException("com.nanshakov.parser.integration.impl.Reddit.extractElement");
     }
 }

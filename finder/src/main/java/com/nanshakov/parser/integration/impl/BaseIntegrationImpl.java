@@ -42,7 +42,7 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
     @Value("${spring.kafka.topic}")
     private String topic;
     @Autowired
-    private TagsService tagsService;
+    TagsService tagsService;
     @Autowired
     private ApplicationContext ctx;
     @Autowired
@@ -69,13 +69,13 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
         this.isRecursionModeEnable = isRecursionModeEnable;
         this.recursionDepth = recursionDepth;
         this.duplicatesCountLimit = duplicatesCountLimit;
+        loadTags();
+        printInfo();
+        setNextTag();
     }
 
     @Override
     public void run() {
-        loadTags();
-        printInfo();
-        setNextTag();
         while (!tagsService.isEmpty()) {
             PageObject rawPosts = getPage();
             //Если произошла ошибка парсинга
