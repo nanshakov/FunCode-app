@@ -82,7 +82,7 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
             PageObject rawPosts = getPage();
             //Если произошла ошибка парсинга
             if (rawPosts == null) {
-                incrementPage();
+                page = incrementPage();
                 errorsCounter.increment();
                 continue;
             }
@@ -92,15 +92,15 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
                 if (isRecursionModeEnable) {
                     tagsService.addTags(post.getTags());
                 }
-                if (!checkLang(post.getAlt())) {
+                if (post.isCheckLangNeeded() && !checkLang(post.getAlt())) {
                     continue;
                 }
-                if (!sendToKafka(post)) {
-                    if (duplicatesCount > duplicatesCountLimit) {
-                        log.info("Switch by duplicates {}", duplicatesCount);
-                        setNextTag();
-                    }
-                }
+                sendToKafka(post);
+            }
+
+            if (duplicatesCount > duplicatesCountLimit) {
+                log.info("Switch by duplicates {}", duplicatesCount);
+                setNextTag();
             }
 
             //Если достигли лимита рекурсивного обхода
@@ -116,13 +116,12 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
                 this.page = page;
             }
         }
+        log.info("Done");
     }
 
     private void loadTags() {
-        if (isRecursionModeEnable) {
-            tagsService.addTags(Arrays.stream(tags.split(",")).map(String::trim).collect(Collectors.toList()));
-            //tagsService.addTags(StopWords.German.getStopwords());
-        }
+        tagsService.addTags(Arrays.stream(tags.split(",")).map(String::trim).collect(Collectors.toList()));
+        //tagsService.addTags(StopWords.German.getStopwords());
     }
 
     /**
@@ -134,6 +133,7 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
             currentTag = tagsService.pop();
             page = 0;
             if (currentTag != null) {
+                log.info("Tags: {}", tagsService.getTags());
                 log.info("Current tag is: {}", currentTag);
             } else {
                 log.warn("Tag is null!");
@@ -205,18 +205,36 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
                 .append("Tags : ").append(tagsService.getTags()));
     }
 
+    /**
+     * @return Обьект страницы после парсинга
+     */
     @Null
     abstract PageObject getPage();
 
+    /**
+     * @return Правило инкремента счетчика страниц
+     */
     @Null
     abstract int incrementPage();
 
+    /**
+     * @param p Обьект страницы после парсинга com.nanshakov.parser.integration.impl.BaseIntegrationImpl#getPage()
+     * @return номер следующей страницы
+     */
     @Null
     abstract Integer getNextPage(PageObject p);
 
+    /**
+     * @param singleObject единица контента com.nanshakov.parser.integration.impl.BaseIntegrationImpl#extractElement(java.lang.Object)
+     * @return Универсальный обьект com.nanshakov.common.dto.PostDto
+     */
     @NonNull
     abstract PostDto parse(SingleObject singleObject);
 
+    /**
+     * @param p Обьект страницы после парсинга com.nanshakov.parser.integration.impl.BaseIntegrationImpl#getPage()
+     * @return Спискок единиц контента
+     */
     @NonNull
     abstract Collection<SingleObject> extractElement(PageObject p);
 }

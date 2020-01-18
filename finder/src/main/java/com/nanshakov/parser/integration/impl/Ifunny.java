@@ -117,6 +117,7 @@ public class Ifunny extends BaseIntegrationImpl<Document, Element> {
                     .imgUrl(url)
                     .url(href)
                     .alt(alt)
+                    .checkLangNeeded(false)
                     .from(getPlatform())
                     .type(resolveType(el.select("a[data-type]").attr("data-type")))
                     .build();

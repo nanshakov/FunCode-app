@@ -32,8 +32,8 @@ public class TagsService {
         }
     }
 
-    public Set<String> getTags() {
-        return frequencies.keySet();
+    public TreeSet<Tag> getTags() {
+        return tagsStore;
     }
 
     public void push(String text) {

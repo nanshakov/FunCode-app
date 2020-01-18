@@ -77,7 +77,6 @@ public class NineGag extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
                 .collect(Collectors.toList());
     }
 
-    @Override
     public @Null Integer getNextPage(NineGagDto p) {
         if (p.getData().getNextCursor() == null) {
             log.info("Switch by cursor (nextId) is null. End of data.");
@@ -111,6 +110,7 @@ public class NineGag extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
                 .alt(el.getTitle())
                 .from(getPlatform())
                 .type(type)
+                .checkLangNeeded(true)
                 .author(el.getPostSection().getName())
                 .likes(el.getUpVoteCount())
                 .dislikes(el.getDownVoteCount())
@@ -120,7 +120,6 @@ public class NineGag extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
                 .build();
     }
 
-    @Override
     @NonNull List<NineGagDto.Post> extractElement(NineGagDto p) {
         return p.getData().getPosts();
     }

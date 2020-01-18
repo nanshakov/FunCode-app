@@ -33,7 +33,6 @@ public class FinderApplication implements CommandLineRunner {
     public void run(String... args) {
         for (BaseIntegration integration : integrations) {
             if (type.contains(integration.getPlatform().toString())) {
-                integration.printInfo();
                 taskExecutor.execute(integration);
             }
 
