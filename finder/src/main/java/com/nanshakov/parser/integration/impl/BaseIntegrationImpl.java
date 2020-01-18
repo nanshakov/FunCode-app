@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.Null;
@@ -86,12 +86,12 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
                 errorsCounter.increment();
                 continue;
             }
-            if (isRecursionModeEnable) {
-                tagsService.addTags(extractTags(rawPosts));
-            }
 
             for (SingleObject p : extractElement(rawPosts)) {
                 PostDto post = parse(p);
+                if (isRecursionModeEnable) {
+                    tagsService.addTags(post.getTags());
+                }
                 if (!checkLang(post.getAlt())) {
                     continue;
                 }
@@ -112,6 +112,8 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
             Integer page = getNextPage(rawPosts);
             if (page == null) {
                 setNextTag();
+            } else {
+                this.page = page;
             }
         }
     }
@@ -209,9 +211,6 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
     @Null
     abstract int incrementPage();
 
-    @NonNull
-    abstract List<String> extractTags(PageObject s);
-
     @Null
     abstract Integer getNextPage(PageObject p);
 
@@ -219,5 +218,5 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
     abstract PostDto parse(SingleObject singleObject);
 
     @NonNull
-    abstract List<SingleObject> extractElement(PageObject p);
+    abstract Collection<SingleObject> extractElement(PageObject p);
 }

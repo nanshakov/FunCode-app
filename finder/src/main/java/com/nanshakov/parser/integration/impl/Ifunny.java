@@ -13,15 +13,18 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.validation.constraints.Null;
 
-import lombok.SneakyThrows;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-public class Ifunny extends BaseIntegrationImpl<Document, P> {
+public class Ifunny extends BaseIntegrationImpl<Document, Element> {
 
     private String nextId = "1567508062";
     @Value("${IFUNNY.tags}")
@@ -29,30 +32,9 @@ public class Ifunny extends BaseIntegrationImpl<Document, P> {
     @Value("${IFUNNY.download-url}")
     private String downloadUrl;
 
-    @SneakyThrows
-    @Override
-    public void run() {
-        log.info("Started...");
-
-        int count = Integer.MAX_VALUE;
-        for (int i = 0; i < count; i++) {
-            Document doc = getPage(i);
-            if (doc == null) {
-                close();
-                return;
-            }
-            //получаем новые id
-            if (doc.selectFirst("li[data-next]") != null) {
-                nextId = doc.selectFirst("li[data-next]").attr("data-next");
-            } else {
-                break;
-            }
-            Elements listNews = doc.select(".post__media");
-            listNews.forEach(el -> {
-                PostDto post = parse(el);
-                sendToKafka(post);
-            });
-        }
+    @PostConstruct
+    public void postConstruct() {
+        addParams(tags, false, 100, 100, downloadUrl);
     }
 
     @Override
@@ -60,8 +42,8 @@ public class Ifunny extends BaseIntegrationImpl<Document, P> {
         return Platform.IFUNNY;
     }
 
-    @Null
-    Document getPage(long pageNum) {
+    @Override
+    Document getPage() {
         try {
             StringBuilder url = new StringBuilder();
             url.append("https://ifunny.co/api/tags/")
@@ -69,17 +51,29 @@ public class Ifunny extends BaseIntegrationImpl<Document, P> {
                     .append("/")
                     .append(nextId)
                     .append("?page=")
-                    .append(pageNum);
+                    .append(page);
             return call(url.toString(), Connection.Method.POST);
         } catch (IOException e) {
-            errorsCounter.increment();
-            log.error(e);
+            return null;
+        }
+
+    }
+
+    @Override
+    @Null int incrementPage() {
+        return page++;
+    }
+
+    @Override
+    @Null Integer getNextPage(Document doc) {
+        if (doc.selectFirst("li[data-next]") != null) {
+            nextId = doc.selectFirst("li[data-next]").attr("data-next");
         }
         return null;
     }
 
     @Null
-    private PostDto parse(Element el) {
+    PostDto parse(Element el) {
         Elements img = el.select("img");
 
         String dataSrc = img.attr("data-src");
@@ -128,6 +122,11 @@ public class Ifunny extends BaseIntegrationImpl<Document, P> {
                     .build();
         }
         return null;
+    }
+
+    @Override
+    @NonNull List<Element> extractElement(Document doc) {
+        return new ArrayList<>(doc.select(".post__media"));
     }
 
     private Type resolveType(String type) {

@@ -2,6 +2,7 @@ package com.nanshakov.common.dto;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,4 +46,6 @@ public class PostDto implements Serializable {
     Platform from;
 
     Type type;
+
+    List<String> tags;
 }

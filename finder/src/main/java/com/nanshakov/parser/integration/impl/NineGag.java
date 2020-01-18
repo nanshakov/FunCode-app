@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -43,7 +42,7 @@ public class NineGag extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
 
 
     @PostConstruct
-    void postConstruct() {
+    public void postConstruct() {
         addParams(tags, isRecursionModeEnable, recursionDepth, duplicatesCountLimit, downloadUrl);
     }
 
@@ -71,16 +70,11 @@ public class NineGag extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
         return page + 10;
     }
 
-    @Override
-    public List<String> extractTags(NineGagDto s) {
-        List<String> result = new ArrayList<>();
-        for (NineGagDto.Post p : s.getData().getPosts()) {
-            result.addAll(p.getTags()
-                    .stream()
-                    .map(t -> t.getUrl().replace("/tag/", "").toLowerCase())
-                    .collect(Collectors.toList()));
-        }
-        return result;
+    public List<String> extractTags(NineGagDto.Post el) {
+        return el.getTags()
+                .stream()
+                .map(t -> t.getUrl().replace("/tag/", "").toLowerCase())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -109,8 +103,10 @@ public class NineGag extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
             imgUrl = el.getImages().getImage700().getUrl();
             type = Type.PHOTO;
         }
+
         return PostDto.builder()
                 .url(el.getUrl())
+                .tags(extractTags(el))
                 .imgUrl(imgUrl)
                 .alt(el.getTitle())
                 .from(getPlatform())
