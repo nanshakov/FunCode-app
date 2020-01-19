@@ -96,8 +96,9 @@ public class ClickHouseDao implements PostMetaRepository {
     @Override
     public Post findById(String id) {
         return jdbcTemplate.queryForObject(
-                "select * from " + schema + " where urlImgHash=?",
-                new Object[] {id}, Post.class);
+                "select * from " + schema + " where contentHash=?",
+                new Object[] {id}, (rs, rowNum) ->
+                        getBuild(rs));
     }
 
     @Override
