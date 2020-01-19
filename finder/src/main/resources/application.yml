@@ -18,7 +18,7 @@ NineGag:
     duplicates-count: 50 #сколько должно быть дубликатов подряд, что бы произошло переключение тега.
 
 Reddit:
-  tags: "asozialesnetzwerk,ich_iel,kreiswichs,Lustig,NichtDerPostillon,schland,wasletztepreis"
+  tags: "asozialesnetzwerk,ich_iel,kreiswichs,Lustig,NichtDerPostillon,schland,wasletztepreis,austria,switzerland,liechtenstein,Luxembourg,DSA_RPG,PietSmiet,zocken,600euro,aeiou,doener,DEjobs,depression_de,de_IAmA,de_EDV,de_it,erasmus,finanzen,fragreddit,germantrees,GermanyPics,Geschichte,kochen,recht,veganDE,Weibsvolk,wissenschaft"
   username: "nanshakov"
   password: "112233"
   clientId: "zCfokV2al_OClQ"
