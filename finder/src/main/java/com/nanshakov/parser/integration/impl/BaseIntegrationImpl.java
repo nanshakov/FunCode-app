@@ -86,7 +86,7 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
             }
 
             for (SingleObject singleObject : extractElement(rawPosts)) {
-                PostDto post = parse(singleObject);
+                PostDto post = parse(singleObject, rawPosts);
                 if (isRecursionModeEnable) {
                     tagsService.addTags(post.getTags());
                 }
@@ -225,7 +225,7 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
      * @return Универсальный обьект com.nanshakov.common.dto.PostDto
      */
     @NonNull
-    abstract PostDto parse(SingleObject singleObject);
+    abstract PostDto parse(SingleObject singleObject, PageObject p);
 
     /**
      * @param p Обьект страницы после парсинга com.nanshakov.parser.integration.impl.BaseIntegrationImpl#getPage()

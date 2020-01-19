@@ -22,8 +22,10 @@ public class TagsService {
     private final Set<String> processedTags = new HashSet<>();
 
     public void addTags(Collection<String> tags) {
-        for (String tag : tags) {
-            push(tag.trim());
+        if (tags != null) {
+            for (String tag : tags) {
+                push(tag.trim());
+            }
         }
     }
 

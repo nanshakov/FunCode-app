@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.Null;
@@ -78,14 +76,14 @@ public class Ifunny extends BaseIntegrationImpl<Document, Element> {
 
     @Override
     @Null Integer getNextPage(Document doc) {
-        if (doc.selectFirst("li[data-next]") != null) {
-            nextId = doc.selectFirst("li[data-next]").attr("data-next");
-        }
-        return null;
+        return page + 1;
     }
 
     @Null
-    PostDto parse(Element el) {
+    PostDto parse(Element el, Document doc) {
+        if (doc.selectFirst("li[data-next]") != null) {
+            nextId = doc.selectFirst("li[data-next]").attr("data-next");
+        }
         Elements img = el.select("img");
 
         String dataSrc = img.attr("data-src");
@@ -100,7 +98,7 @@ public class Ifunny extends BaseIntegrationImpl<Document, Element> {
             var postBuilder = PostDto.builder();
             //теги
             String alt = img.attr("alt");
-            postBuilder.tags(Arrays.stream(alt.split(",")).collect(Collectors.toList()));
+            //postBuilder.tags(Arrays.stream(alt.split(",")).collect(Collectors.toList()));
             //если есть ',' то это список тегов, в них нет смысла искать язык
             if (!alt.contains(",") && checkLang(alt)) {
                 Document extendedPost = resolvePost(href);
@@ -153,7 +151,7 @@ public class Ifunny extends BaseIntegrationImpl<Document, Element> {
         if (datetime.endsWith("d")) {
             return LocalDateTime.now().minusDays(Long.parseLong(datetime.substring(0, datetime.length() - 2)));
         }
-        return LocalDateTime.now();
+        return null;
     }
 
     private long resolveComments(String commentCount) {

@@ -43,7 +43,7 @@ class BaseIntegrationImplTest {
         }
 
         @Override
-        @NonNull PostDto parse(Object o) {
+        @NonNull PostDto parse(Object o, Object ob) {
             return null;
         }
 

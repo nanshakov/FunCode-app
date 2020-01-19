@@ -137,7 +137,7 @@ public class Reddit extends BaseIntegrationImpl<Object, Object> {
     }
 
     @Override
-    @NonNull PostDto parse(Object o) {
+    @NonNull PostDto parse(Object o, Object ob) {
         throw new NotImplementedException("com.nanshakov.parser.integration.impl.Reddit.parse");
     }
 

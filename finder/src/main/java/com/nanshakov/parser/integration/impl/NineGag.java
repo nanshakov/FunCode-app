@@ -95,7 +95,7 @@ public class NineGag extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
     }
 
     @Null
-    PostDto parse(NineGagDto.Post el) {
+    PostDto parse(NineGagDto.Post el, NineGagDto d) {
         String imgUrl;
         Type type;
         if (el.getImages().isContainsVideo()) {
