@@ -111,17 +111,6 @@ public class Reddit extends BaseIntegrationImpl<Object, Object> {
         }
     }
 
-    private void setNextTag() {
-        duplicatesCount = 0;
-        log.trace("Tags: {}", tagsService.getTags());
-        currentTag = tagsService.pop();
-        if (currentTag != null) {
-            log.info("Current tag is: {}", currentTag);
-        } else {
-            log.warn("Tag is null!");
-        }
-    }
-
     @Override
     public Platform getPlatform() {
         return Platform.Reddit;

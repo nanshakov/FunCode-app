@@ -125,17 +125,15 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
     /**
      * Получает новый тег и сбрасывает счетчик страницы
      */
-    private void setNextTag() {
+    void setNextTag() {
         duplicatesCount = 0;
-        if (isRecursionModeEnable) {
-            log.trace("Tags: {}", tagsService.getTags());
-            currentTag = tagsService.pop();
-            page = 0;
-            if (currentTag != null) {
-                log.info("Current tag is: {}", currentTag);
-            } else {
-                log.warn("Tag is null!");
-            }
+        log.trace("Tags: {}", tagsService.getTags());
+        currentTag = tagsService.pop();
+        page = 0;
+        if (currentTag != null) {
+            log.info("Current tag is: {}", currentTag);
+        } else {
+            log.warn("Tag is null!");
         }
     }
 
