@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -53,6 +55,7 @@ public class ClickHouseDao implements PostMetaRepository {
 
     @Override
     public boolean containsByUrl(String hash) {
+        //noinspection ConstantConditions
         return jdbcTemplate.queryForObject(
                 "select count(urlImgHash) from " + schema + " where urlImgHash=?",
                 new Object[] {hash}, Boolean.class);
@@ -77,12 +80,14 @@ public class ClickHouseDao implements PostMetaRepository {
         parameters.put("sourceUrl", p.getUrl());
         parameters.put("contentHash", p.getContentHash());
         parameters.put("source", p.getFrom());
-        if (p.getDateTime() != null) { parameters.put("datetime", p.getDateTime().format(dateTimeFormatter)); }
+        parameters.put("datetime", p.getDateTime().format(dateTimeFormatter));
         parameters.put("pathToContent", p.getPathToContent());
         parameters.put("likes", p.getLikes());
         parameters.put("dislikes", p.getDislikes());
+        parameters.put("totalScope", p.getLikes() + p.getDislikes());
         parameters.put("comments", p.getComments());
         parameters.put("alt", p.getAlt());
+        parameters.put("title", p.getAlt());
         parameters.put("author", p.getAuthor());
 
         return simpleJdbcInsert.execute(parameters);
@@ -97,8 +102,7 @@ public class ClickHouseDao implements PostMetaRepository {
 
     @Override
     public Result findByPage(int pageNum, int limit) {
-        int count = jdbcTemplate.queryForObject("select count(urlImgHash) from " + schema, Integer.class).intValue();
-        int pages = (int) (count / limit) + 1;
+        int pages = (getCount() / limit) + 1;
         return Result.builder()
                 .currentPage(pageNum)
                 .pages(pages)
@@ -106,18 +110,42 @@ public class ClickHouseDao implements PostMetaRepository {
                 .posts(jdbcTemplate.query(
                         "select * from " + schema + " ORDER BY datetime DESC LIMIT ?, ?",
                         new Object[] {--pageNum * limit, limit}, (rs, rowNum) ->
-                                Post.builder()
-                                        .alt(rs.getString("alt"))
-                                        .author(rs.getString("author"))
-                                        .comments(rs.getLong("comments"))
-                                        .dateTime(LocalDateTime.parse(rs.getString("datetime"), dateTimeFormatter))
-                                        .dislikes(rs.getLong("dislikes"))
-                                        .likes(rs.getLong("likes"))
-                                        //.from(rs.getString("source"))
-                                        .id(rs.getString("contentHash"))
-                                        .pathToContent(rs.getString("pathToContent"))
-                                        .url(rs.getString("sourceUrl"))
-                                        .build()
+                                getBuild(rs)
                 )).build();
     }
+
+    @Override
+    public Result findHot(int pageNum, int limit) {
+        int pages = (getCount() / limit) + 1;
+        return Result.builder()
+                .currentPage(pageNum)
+                .pages(pages)
+                .count(limit)
+                .posts(jdbcTemplate.query(
+                        "select * from " + schema + " ORDER BY datetime DESC LIMIT ?, ?",
+                        new Object[] {--pageNum * limit, limit}, (rs, rowNum) ->
+                                getBuild(rs)
+                )).build();
+    }
+
+    private int getCount() {
+        return jdbcTemplate.queryForObject("select count(urlImgHash) from " + schema, Integer.class).intValue();
+    }
+
+    private Post getBuild(ResultSet rs) throws SQLException {
+        return Post.builder()
+                .alt(rs.getString("alt"))
+                .author(rs.getString("author"))
+                .comments(rs.getLong("comments"))
+                .dateTime(LocalDateTime.parse(rs.getString("datetime"), dateTimeFormatter))
+                .dislikes(rs.getLong("dislikes"))
+                .likes(rs.getLong("likes"))
+                //.from(rs.getString("source"))
+                .id(rs.getString("contentHash"))
+                .pathToContent(rs.getString("pathToContent"))
+                .url(rs.getString("sourceUrl"))
+                .title(rs.getString("title"))
+                .build();
+    }
+
 }

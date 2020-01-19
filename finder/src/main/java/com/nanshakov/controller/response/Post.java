@@ -38,4 +38,6 @@ public class Post implements Serializable {
     Platform from;
 
     Type type;
+
+    String title;
 }

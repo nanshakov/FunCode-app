@@ -15,4 +15,6 @@ public interface PostMetaRepository {
     Post findById(String id);
 
     Result findByPage(int pageNum, int limit);
+
+    Result findHot(int pageNum, int limit);
 }

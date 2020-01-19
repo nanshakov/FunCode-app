@@ -23,9 +23,17 @@ public class FeedController {
     private PostMetaRepository postMetaRepository;
 
     @GetMapping("/feed")
-    public Result getFeed(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-                          @RequestParam(value = "count", defaultValue = "50") int count) {
+    public Result getFeed(
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "count", defaultValue = "50") int count) {
         return postMetaRepository.findByPage(pageNum, count);
+    }
+
+    @GetMapping("/hot")
+    public Result getHot(
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "count", defaultValue = "50") int count) {
+        return postMetaRepository.findHot(pageNum, count);
     }
 
     @GetMapping("/feed/{id}")
