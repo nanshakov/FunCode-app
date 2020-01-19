@@ -68,7 +68,7 @@ public class Reddit extends BaseIntegrationImpl<Object, Object> {
 
     @Override
     public void run() {
-        while (!tagsService.isEmpty()) {
+        while (!tagsService.isEmpty() || currentTag != null) {
             try {
                 DefaultPaginator<Submission> paginator = redditClient.subreddit(currentTag)
                         .posts()
@@ -86,7 +86,6 @@ public class Reddit extends BaseIntegrationImpl<Object, Object> {
                                     .alt(s.getLinkFlairText())
                                     .from(getPlatform())
                                     .type(Type.PHOTO)
-                                    .checkLangNeeded(true)
                                     .author(s.getAuthor())
                                     .likes(s.getVote().ordinal())
                                     .comments(s.getCommentCount())
@@ -94,7 +93,7 @@ public class Reddit extends BaseIntegrationImpl<Object, Object> {
                                     .dateTime(new Timestamp(s.getCreated().getTime()).toLocalDateTime())
                                     .build();
 
-                            if (post.isCheckLangNeeded() && !checkLang(post.getAlt())) {
+                            if (!checkLang(post.getAlt())) {
                                 continue;
                             }
 

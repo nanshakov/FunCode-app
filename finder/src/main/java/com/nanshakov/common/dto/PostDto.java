@@ -48,9 +48,4 @@ public class PostDto implements Serializable {
     Type type;
 
     List<String> tags;
-
-    /**
-     * Проверка языка перед отправкой в кафку
-     */
-    boolean checkLangNeeded;
 }

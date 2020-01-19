@@ -23,7 +23,7 @@ public class TagsService {
 
     public void addTags(Collection<String> tags) {
         for (String tag : tags) {
-            push(tag);
+            push(tag.trim());
         }
     }
 

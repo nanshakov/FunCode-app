@@ -113,7 +113,6 @@ public class NineGag extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
                 .alt(el.getTitle())
                 .from(getPlatform())
                 .type(type)
-                .checkLangNeeded(true)
                 .author(el.getPostSection().getName())
                 .likes(el.getUpVoteCount())
                 .dislikes(el.getDownVoteCount())

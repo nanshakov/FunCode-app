@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.Null;
@@ -33,11 +35,17 @@ public class Ifunny extends BaseIntegrationImpl<Document, Element> {
     private String downloadUrl;
     @Value("${type}")
     String type;
+    @Value("${NineGag.recursion.enable:false}")
+    private boolean isRecursionModeEnable;
+    @Value("${NineGag.recursion.depth:1000}")
+    private long recursionDepth;
+    @Value("${NineGag.recursion.duplicates-count:100}")
+    private long duplicatesCountLimit;
 
     @PostConstruct
     public void postConstruct() {
         if (type.contains(getPlatform().toString())) {
-            addParams(tags, false, 100, 100);
+            addParams(tags, isRecursionModeEnable, recursionDepth, duplicatesCountLimit);
         }
     }
 
@@ -51,7 +59,7 @@ public class Ifunny extends BaseIntegrationImpl<Document, Element> {
         try {
             StringBuilder url = new StringBuilder();
             url.append("https://ifunny.co/api/tags/")
-                    .append(tags)
+                    .append(currentTag)
                     .append("/")
                     .append(nextId)
                     .append("?page=")
@@ -89,9 +97,10 @@ public class Ifunny extends BaseIntegrationImpl<Document, Element> {
             String url = downloadUrl + split[5];
             //ссылка на пост
             String href = "https://ifunny.co/" + el.select("a[href]").attr("href");
+            var postBuilder = PostDto.builder();
             //теги
             String alt = img.attr("alt");
-            var postBuilder = PostDto.builder();
+            postBuilder.tags(Arrays.stream(alt.split(",")).collect(Collectors.toList()));
             //если есть ',' то это список тегов, в них нет смысла искать язык
             if (!alt.contains(",") && checkLang(alt)) {
                 Document extendedPost = resolvePost(href);
@@ -121,7 +130,6 @@ public class Ifunny extends BaseIntegrationImpl<Document, Element> {
                     .imgUrl(url)
                     .url(href)
                     .alt(alt)
-                    .checkLangNeeded(false)
                     .from(getPlatform())
                     .type(resolveType(el.select("a[data-type]").attr("data-type")))
                     .build();

@@ -76,7 +76,7 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
 
     @Override
     public void run() {
-        while (!tagsService.isEmpty()) {
+        while (!tagsService.isEmpty() || currentTag != null) {
             PageObject rawPosts = getPage();
             //Если произошла ошибка парсинга
             if (rawPosts == null) {
@@ -90,7 +90,7 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
                 if (isRecursionModeEnable) {
                     tagsService.addTags(post.getTags());
                 }
-                if (post.isCheckLangNeeded() && !checkLang(post.getAlt())) {
+                if (!checkLang(post.getAlt())) {
                     continue;
                 }
                 sendToKafka(post);
@@ -176,6 +176,7 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
     }
 
     @Null Document call(String url, Connection.Method method) throws IOException {
+        log.info("Preparing to call {}", url);
         if (method == Connection.Method.POST) {
             return Jsoup.connect(url)
                     .ignoreContentType(true)
