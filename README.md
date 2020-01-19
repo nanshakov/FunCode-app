@@ -50,7 +50,8 @@ Arabic, Armenian, Catalan, Croatian, Czech, Dutch(),
     Italian(), Latin(), Norwegian(), Polish(), Portuguese(), 
     Romanian(), Russian(), Slovenian(), Slovak(), Spanish
     Swedish(), Hebrew(), Turkish()
-`tags` - список тегов для парсинга
+```
+`tags` - список тегов для парсинга, через запятую
 ```
   recursion: 
     enable: true - включить рекурсивный обход тегов
@@ -116,4 +117,5 @@ s3.port: 9999
 ## Эндпоинты
 
 ## Метрики
+
 
