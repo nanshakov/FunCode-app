@@ -44,14 +44,14 @@ Reddit:
 `type` - перечесление воркеров по именам
 `lang` - язык для проверки контента
 ```
-Arabic, Armenian, Catalan, Croatian, Czech, Dutch(), 
-    Danish(), English(), Esperanto(), Farsi(), Finnish(), 
-    French(true), German(), Greek(), Hindi(), Hungarian(), 
-    Italian(), Latin(), Norwegian(), Polish(), Portuguese(), 
-    Romanian(), Russian(), Slovenian(), Slovak(), Spanish
-    Swedish(), Hebrew(), Turkish()
+Arabic, Armenian, Catalan, Croatian, Czech, Dutch, 
+    Danish, English, Esperanto, Farsi, Finnish, 
+    French(true), German, Greek, Hindi, Hungarian, 
+    Italian, Latin, Norwegian, Polish, Portuguese, 
+    Romanian, Russian, Slovenian, Slovak, Spanish
+    Swedish, Hebrew, Turkish
 ```
-`tags` - список тегов для парсинга, через запятую
+`tags` - список тегов для парсинга, через запятую, либо "тредов"
 ```
   recursion: 
     enable: true - включить рекурсивный обход тегов
@@ -131,4 +131,12 @@ s3.port: 9999
 
 ## Метрики
 
-
+| Параметр | Описание |
+| ------ | ------ |
+|parse.duplicates | Количество дубликатов, которые найдены в процессе парсинга|
+|parse.successful | Количество успешно (прошло проверку на дубликаты и на язык) постов|
+|parse.error | Количество ошибок получения \ разбора контента|
+|parse.drop | Количество отброшенных по языковому признаку постов|
+|processing.successful | Количество успешно сохраненных в БД (прошло проверку на дубликаты) постов|
+|processing.duplicates |  Количество дубликатов, которые найдены в процессе обработки|
+|processing.error | Количество ошибок получения \ разбора контента|
