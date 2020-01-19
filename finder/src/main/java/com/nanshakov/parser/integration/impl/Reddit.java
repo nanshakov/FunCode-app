@@ -68,7 +68,7 @@ public class Reddit extends BaseIntegrationImpl<Object, Object> {
 
     @Override
     public void run() {
-        while (!tagsService.isEmpty() || currentTag != null) {
+        while (!tagsService.isEmpty()) {
             try {
                 DefaultPaginator<Submission> paginator = redditClient.subreddit(currentTag)
                         .posts()

@@ -1,5 +1,5 @@
 #IFUNNY,NineGag,Reddit
-type: "IFUNNY"
+type: "Reddit"
 
 IFUNNY:
   download-url: "https://img.ifunny.co/images/"
@@ -38,7 +38,7 @@ spring:
     host: docker01.dev.mdlp.crpt.tech
     port: 6379
   kafka:
-    topic: "nanshakov18"
+    topic: "nanshakov20"
     producer:
       bootstrap:
         servers: docker01.dev.mdlp.crpt.tech:9092
