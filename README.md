@@ -29,7 +29,7 @@
 #IFUNNY,NineGag,Reddit
 type: "IFUNNY,NineGag,Reddit"
 lang: German
-
+multi-instance: false - обязательно включить при 2х и более инстансах
 IFUNNY:
   download-url: "https://img.ifunny.co/images/"
   tags: "deutsch,german"
