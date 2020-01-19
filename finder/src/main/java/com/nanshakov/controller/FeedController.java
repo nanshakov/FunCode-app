@@ -29,7 +29,7 @@ public class FeedController {
         return postMetaRepository.findByPage(pageNum, count);
     }
 
-    @GetMapping("/hot")
+    @GetMapping("/feed/hot")
     public Result getHot(
             @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
             @RequestParam(value = "count", defaultValue = "50") int count) {

@@ -23,6 +23,11 @@
                 <version>${minio.version}</version>
             </dependency>
             <dependency>
+                <artifactId>springfox-swagger2</artifactId>
+                <groupId>io.springfox</groupId>
+                <version>${springfox-swagger2.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>net.dean.jraw</groupId>
                 <artifactId>JRAW</artifactId>
                 <version>${jraw.version}</version>
@@ -50,16 +55,16 @@
         </dependencies>
     </dependencyManagement>
     <properties>
-        <jraw.version>1.1.0</jraw.version>
         <clickhouse-jdbc.version>0.2</clickhouse-jdbc.version>
         <fluent-hc.version>4.5.10</fluent-hc.version>
         <java.version>11</java.version>
+        <jraw.version>1.1.0</jraw.version>
         <jsoup.version>1.12.1</jsoup.version>
         <minio.version>6.0.11</minio.version>
         <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
+        <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
         <twitter4j-core.version>[4.0,)</twitter4j-core.version>
     </properties>
-
     <repositories>
         <repository>
             <id>jcenter</id>

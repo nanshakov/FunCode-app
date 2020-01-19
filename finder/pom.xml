@@ -115,6 +115,10 @@
             <artifactId>JRAW</artifactId>
             <groupId>net.dean.jraw</groupId>
         </dependency>
+        <dependency>
+            <artifactId>springfox-swagger2</artifactId>
+            <groupId>io.springfox</groupId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
