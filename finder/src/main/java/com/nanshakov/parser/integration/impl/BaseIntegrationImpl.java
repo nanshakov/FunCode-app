@@ -147,7 +147,7 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
         successfulCounter.increment();
         if (!existInRedis(hash)) {
             duplicatesCount = 0;
-            //kafkaTemplate.send(topic, hash, post);
+            kafkaTemplate.send(topic, hash, post);
         } else {
             log.trace("Post {} with hash {} found in redis, do nothing", post, hash);
             duplicatesCounter.increment();
@@ -157,7 +157,7 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
     }
 
     boolean checkLang(@Null String str) {
-        if (str == null) { return false; }
+        if (str == null) { return true; }
         if (!str.isEmpty()) {
             if (!StopWords.German.isStopWord(str)) {
                 dropCounter.increment();

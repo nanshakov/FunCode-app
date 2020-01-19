@@ -44,12 +44,18 @@ public class Reddit extends BaseIntegrationImpl<Object, Object> {
     private String clientId;
     @Value("${Reddit.clientSecret}")
     private String clientSecret;
+    @Value("${Reddit.recursion.enable:false}")
+    private boolean isRecursionModeEnable;
+    @Value("${Reddit.recursion.depth:1000}")
+    private long recursionDepth;
+    @Value("${Reddit.recursion.duplicates-count:100}")
+    private long duplicatesCountLimit;
 
     RedditClient redditClient;
 
     @PostConstruct
     public void postConstruct() {
-        addParams(tags, false, 0, 0);
+        addParams(tags, isRecursionModeEnable, recursionDepth, duplicatesCountLimit);
         // Create our credentials
         Credentials credentials = Credentials.script(username, password,
                 clientId, clientSecret);
