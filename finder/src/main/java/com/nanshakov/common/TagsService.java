@@ -9,20 +9,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.validation.constraints.Null;
-
-import lombok.Builder;
-import lombok.Data;
 
 @Service
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @NotThreadSafe
 public class TagsService {
 
-    private final TreeSet<Tag> tagsStore = new TreeSet<>();
     private final Map<String, Integer> frequencies = new HashMap<>();
     private final Set<String> processedTags = new HashSet<>();
 
@@ -32,17 +27,14 @@ public class TagsService {
         }
     }
 
-    public TreeSet<Tag> getTags() {
-        return tagsStore;
+    public Map<String, Integer> getTags() {
+        return frequencies;
     }
 
     public void push(String text) {
         if (!processedTags.contains(text)) {
-            var tag = getLastTagByString(text);
-            tagsStore.remove(tag);
-            tag.increment();
-            tagsStore.add(tag);
-            frequencies.put(text, tag.getCount());
+            var count = frequencies.getOrDefault(text, 0);
+            frequencies.put(text, ++count);
         }
     }
 
@@ -52,41 +44,20 @@ public class TagsService {
 
     public void invalidate(String text) {
         processedTags.add(text);
-        tagsStore.remove(getLastTagByString(text));
+        frequencies.remove(text);
     }
 
     @SuppressWarnings("ConstantConditions")
     @Null
     public String pop() {
-        if (!tagsStore.isEmpty()) {
-            String tag = tagsStore.pollLast().text;
-            processedTags.add(tag);
-            return tag;
+        if (!frequencies.isEmpty()) {
+            var tag = frequencies.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
+            if (tag == null) { return null; }
+            processedTags.add(tag.getKey());
+            frequencies.remove(tag.getKey());
+            return tag.getKey();
         }
         return null;
     }
 
-    private Tag getLastTagByString(String tag) {
-        return Tag.builder()
-                .text(tag)
-                .count(frequencies.getOrDefault(tag, 0))
-                .build();
-    }
-
-    @Data
-    @Builder
-    public static class Tag implements Comparable<Tag> {
-
-        String text;
-        int count;
-
-        public void increment() {
-            count++;
-        }
-
-        @Override
-        public int compareTo(Tag o) {
-            return Integer.compare(count, o.count);
-        }
-    }
 }
