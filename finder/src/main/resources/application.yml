@@ -1,5 +1,5 @@
 #IFUNNY,NineGag,Reddit
-type: "Reddit"
+type: "IFUNNY,NineGag,Reddit"
 lang: German
 
 IFUNNY:
@@ -32,20 +32,20 @@ Reddit:
 spring:
   datasource:
     driver-class-name: "ru.yandex.clickhouse.ClickHouseDriver"
-    url: "jdbc:clickhouse://docker01.dev.mdlp.crpt.tech:8123/default"
+    url: "jdbc:clickhouse://docker01:8123/default"
     username: ""
     password: ""
   redis:
-    host: docker01.dev.mdlp.crpt.tech
+    host: docker01
     port: 6379
   kafka:
     topic: "nanshakov20"
     producer:
       bootstrap:
-        servers: docker01.dev.mdlp.crpt.tech:9092
+        servers: docker01:9092
     consumer:
       bootstrap:
-        servers: docker01.dev.mdlp.crpt.tech:9092
+        servers: docker01:9092
       group:
         id: 1
       auto-offset-reset: earliest
@@ -71,7 +71,7 @@ endpoints:
     enabled: true
 
 #s3
-s3.endpoint: "http://docker01.dev.mdlp.crpt.tech"
+s3.endpoint: "http://docker01"
 s3.accessKey: "minioadmin"
 s3.secretKey: "minioadmin"
 s3.bucket: "nanshakov"
