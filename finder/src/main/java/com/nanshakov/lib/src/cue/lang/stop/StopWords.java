@@ -38,7 +38,12 @@ import lombok.Getter;
  * @author Jonathan Feinberg <jdf@us.ibm.com>
  */
 public enum StopWords {
-    English(), German();
+    Arabic(), Armenian(), Catalan(true), Croatian(), Czech(), Dutch(), //
+    Danish(), English(), Esperanto(), Farsi(), Finnish(), //
+    French(true), German(), Greek(), Hindi(), Hungarian(), //
+    Italian(), Latin(), Norwegian(), Polish(), Portuguese(), //
+    Romanian(), Russian(), Slovenian(), Slovak(), Spanish(), //
+    Swedish(), Hebrew(), Turkish(), Custom();
 
     public final boolean stripApostrophes;
     @Getter

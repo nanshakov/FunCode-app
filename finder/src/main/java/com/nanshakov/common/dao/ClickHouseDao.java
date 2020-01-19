@@ -122,7 +122,7 @@ public class ClickHouseDao implements PostMetaRepository {
                 .pages(pages)
                 .count(limit)
                 .posts(jdbcTemplate.query(
-                        "select * from " + schema + " ORDER BY datetime DESC LIMIT ?, ?",
+                        "select * from " + schema + " ORDER BY totalScope DESC LIMIT ?, ?",
                         new Object[] {--pageNum * limit, limit}, (rs, rowNum) ->
                                 getBuild(rs)
                 )).build();

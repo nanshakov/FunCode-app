@@ -27,4 +27,15 @@ class StopWordsTest {
         assertEquals(1, g);
         assertEquals(3, e);
     }
+
+    /**
+     * com.nanshakov.parser.integrations.impl.BaseIntegrationImpl#checkLang(java.lang.String)
+     */
+    @Test
+    void makeGuessV2() {
+        int g = StopWords.German.stopWordCount("Trophy pet");
+        int e = StopWords.English.stopWordCount("Trophy pet");
+        assertEquals(2, g);
+        assertEquals(1, e);
+    }
 }

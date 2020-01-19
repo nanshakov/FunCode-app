@@ -1,5 +1,6 @@
 #IFUNNY,NineGag,Reddit
-type: "IFUNNY,NineGag,Reddit"
+type: ""
+lang: German
 
 IFUNNY:
   download-url: "https://img.ifunny.co/images/"

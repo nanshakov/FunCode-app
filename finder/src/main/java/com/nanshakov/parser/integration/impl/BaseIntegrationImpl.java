@@ -41,6 +41,9 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
 
     @Value("${spring.kafka.topic}")
     private String topic;
+    @Value("${lang}")
+    private StopWords lang;
+
     @Autowired
     TagsService tagsService;
     @Autowired
@@ -159,11 +162,11 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
     boolean checkLang(@Null String str) {
         if (str == null) { return true; }
         if (!str.isEmpty()) {
-            if (!StopWords.German.isStopWord(str)) {
+            if (!lang.isStopWord(str)) {
                 dropCounter.increment();
                 return false;
             }
-            if (StopWords.German.stopWordCount(str) <= StopWords.English.stopWordCount(str)) {
+            if (lang != StopWords.English && lang.stopWordCount(str) <= StopWords.English.stopWordCount(str)) {
                 dropCounter.increment();
                 return false;
             }
