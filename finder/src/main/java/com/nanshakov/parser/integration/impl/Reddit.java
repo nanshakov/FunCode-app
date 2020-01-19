@@ -50,7 +50,8 @@ public class Reddit extends BaseIntegrationImpl<Object, Object> {
     private long recursionDepth;
     @Value("${Reddit.recursion.duplicates-count:100}")
     private long duplicatesCountLimit;
-
+    @Value("${multi-instance}")
+    private boolean multiInstance;
     RedditClient redditClient;
 
     @PostConstruct
@@ -70,6 +71,9 @@ public class Reddit extends BaseIntegrationImpl<Object, Object> {
     public void run() {
         while (!tagsService.isEmpty()) {
             try {
+                if (multiInstance) {
+                    Thread.sleep(2500);
+                }
                 DefaultPaginator<Submission> paginator = redditClient.subreddit(currentTag)
                         .posts()
                         .sorting(SubredditSort.NEW)
