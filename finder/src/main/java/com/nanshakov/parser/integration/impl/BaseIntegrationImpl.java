@@ -156,7 +156,8 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
 
     }
 
-    boolean checkLang(String str) {
+    boolean checkLang(@Null String str) {
+        if (str == null) { return false; }
         if (!str.isEmpty()) {
             if (!StopWords.German.isStopWord(str)) {
                 dropCounter.increment();
