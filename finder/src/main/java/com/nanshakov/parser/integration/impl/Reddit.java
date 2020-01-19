@@ -87,7 +87,7 @@ public class Reddit extends BaseIntegrationImpl<Object, Object> {
                                     .from(getPlatform())
                                     .type(Type.PHOTO)
                                     .author(s.getAuthor())
-                                    .likes(s.getVote().ordinal())
+                                    .likes(s.getScore())
                                     .comments(s.getCommentCount())
                                     .title(s.getTitle())
                                     .dateTime(new Timestamp(s.getCreated().getTime()).toLocalDateTime())
