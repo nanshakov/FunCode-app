@@ -82,4 +82,4 @@ logging:
   level:
     io.minio: debug
 
-schema: "metaV2"
+schema: "meta"

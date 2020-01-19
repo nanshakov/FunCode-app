@@ -35,22 +35,23 @@ public class ClickHouseDao implements PostMetaRepository {
 
     @PostConstruct
     private void postConstruct() {
-//        jdbcTemplate.execute("create TABLE " + schema + " IF NOT EXISTS "
-//                + "("
-//                + "    'urlImgHash'    String,"
-//                + "    'sourceUrl'     String,"
-//                + "    'contentHash'   String,"
-//                + "    'source'        String,"
-//                + "    'datetime'      DateTime,"
-//                + "    'pathToContent' String,"
-//                + "    'likes'         Nullable(Int32),"
-//                + "    'dislikes'      Nullable(Int32),"
-//                + "    'comments'      Nullable(Int32),"
-//                + "    'alt'           Nullable(String),"
-//                + "    'title'         Nullable(String),"
-//                + "    'author'        Nullable(String)"
-//                + ")\n"
-//                + "    engine = MergeTree() PARTITION BY toYYYYMM(datetime) ORDER BY ('urlImgHash', 'contentHash');");
+        jdbcTemplate.execute("create table IF NOT EXISTS " + schema
+                + "(\n"
+                + "    urlImgHash    String,\n"
+                + "    sourceUrl     String,\n"
+                + "    contentHash   String,\n"
+                + "    source        String,\n"
+                + "    datetime      DateTime,\n"
+                + "    pathToContent String,\n"
+                + "    likes         Int32,\n"
+                + "    dislikes      Int32,\n"
+                + "    totalScope    Int32,\n"
+                + "    comments      Int32,\n"
+                + "    alt           Nullable(String),\n"
+                + "    title         Nullable(String),\n"
+                + "    author        Nullable(String)\n"
+                + ")\n"
+                + "    engine = MergeTree() PARTITION BY toYYYYMM(datetime) ORDER BY (urlImgHash, contentHash, totalScope);");
     }
 
     @Override
