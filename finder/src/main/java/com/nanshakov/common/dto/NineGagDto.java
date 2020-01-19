@@ -113,10 +113,7 @@ public class NineGagDto {
         private Image460sv image460sv;
 
         public boolean isContainsVideo() {
-            if (image460sv != null && image460sv.getVp8Url() != null) {
-                return true;
-            }
-            return false;
+            return image460sv != null && image460sv.getVp8Url() != null;
         }
 
         public String getUrlVideo() {

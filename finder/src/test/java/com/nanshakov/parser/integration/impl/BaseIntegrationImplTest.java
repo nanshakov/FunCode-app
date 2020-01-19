@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BaseIntegrationImplTest {
 
-    BaseIntegrationImpl<Object, Object> baseIntegration = new BaseIntegrationImpl<Object, Object>() {
+    final BaseIntegrationImpl<Object, Object> baseIntegration = new BaseIntegrationImpl<Object, Object>() {
         @Override
         public void postConstruct() {
 

@@ -49,7 +49,6 @@ public class TagsService {
         frequencies.remove(text);
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Null
     public String pop() {
         if (!frequencies.isEmpty()) {

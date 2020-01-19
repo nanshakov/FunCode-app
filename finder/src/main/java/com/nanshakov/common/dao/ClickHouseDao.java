@@ -31,7 +31,7 @@ public class ClickHouseDao implements PostMetaRepository {
     @Value("${schema}")
     private String schema;
 
-    private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @PostConstruct
     private void postConstruct() {

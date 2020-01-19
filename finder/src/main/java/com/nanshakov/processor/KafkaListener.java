@@ -31,11 +31,11 @@ public class KafkaListener {
     @Value("${s3.bucket}")
     private String bucket;
 
-    private Counter successfulProcessedCounter
+    private final Counter successfulProcessedCounter
             = Metrics.counter("processing.successful", "processing", "successful");
-    private Counter duplicatesCounter
+    private final Counter duplicatesCounter
             = Metrics.counter("processing.duplicates", "processing", "duplicates");
-    private Counter processingErrorsCounter
+    private final Counter processingErrorsCounter
             = Metrics.counter("processing.error", "processing", "error");
 
     @org.springframework.kafka.annotation.KafkaListener(topics = "${spring.kafka.topic}")

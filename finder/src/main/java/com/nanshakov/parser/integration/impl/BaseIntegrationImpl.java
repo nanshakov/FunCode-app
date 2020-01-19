@@ -53,10 +53,10 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
     private long recursionDepth;
     long duplicatesCountLimit;
 
-    Counter duplicatesCounter = Metrics.counter("parse.duplicates", "parse", "duplicates");
-    Counter successfulCounter = Metrics.counter("parse.successful", "parse", "successful");
-    Counter errorsCounter = Metrics.counter("parse.error", "parse", "error");
-    Counter dropCounter = Metrics.counter("parse.drop", "parse", "drop");
+    final Counter duplicatesCounter = Metrics.counter("parse.duplicates", "parse", "duplicates");
+    final Counter successfulCounter = Metrics.counter("parse.successful", "parse", "successful");
+    final Counter errorsCounter = Metrics.counter("parse.error", "parse", "error");
+    final Counter dropCounter = Metrics.counter("parse.drop", "parse", "drop");
 
     long duplicatesCount = 0;
 
