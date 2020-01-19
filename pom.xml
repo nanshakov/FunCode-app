@@ -15,16 +15,6 @@
     <modules>
         <module>finder</module>
     </modules>
-    <properties>
-        <JRAW.version>1.1.0</JRAW.version>
-        <clickhouse-jdbc.version>0.2</clickhouse-jdbc.version>
-        <fluent-hc.version>4.5.10</fluent-hc.version>
-        <java.version>11</java.version>
-        <jsoup.version>1.12.1</jsoup.version>
-        <minio.version>6.0.11</minio.version>
-        <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
-        <twitter4j-core.version>[4.0,)</twitter4j-core.version>
-    </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -35,7 +25,7 @@
             <dependency>
                 <groupId>net.dean.jraw</groupId>
                 <artifactId>JRAW</artifactId>
-                <version>${JRAW.version}</version>
+                <version>${jraw.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -59,4 +49,21 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <properties>
+        <jraw.version>1.1.0</jraw.version>
+        <clickhouse-jdbc.version>0.2</clickhouse-jdbc.version>
+        <fluent-hc.version>4.5.10</fluent-hc.version>
+        <java.version>11</java.version>
+        <jsoup.version>1.12.1</jsoup.version>
+        <minio.version>6.0.11</minio.version>
+        <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
+        <twitter4j-core.version>[4.0,)</twitter4j-core.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com/</url>
+        </repository>
+    </repositories>
 </project>

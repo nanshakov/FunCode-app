@@ -1,5 +1,5 @@
-#IFUNNY,NineGag
-type: "NineGag"
+#IFUNNY,NineGag,Reddit
+type: "IFUNNY,NineGag,Reddit"
 
 IFUNNY:
   download-url: "https://img.ifunny.co/images/"
@@ -17,6 +17,17 @@ NineGag:
     depth: 10000
     duplicates-count: 50 #сколько должно быть дубликатов подряд, что бы произошло переключение тега.
 
+Reddit:
+  tags: "asozialesnetzwerk,ich_iel,kreiswichs,Lustig,NichtDerPostillon,schland,wasletztepreis"
+  username: "nanshakov"
+  password: "112233"
+  clientId: "zCfokV2al_OClQ"
+  clientSecret: "qLckFw3cI4-546QhO0yZLouWiDQ"
+  recursion:
+    enable: true
+    depth: 10000
+    duplicates-count: 50 #сколько должно быть дубликатов подряд, что бы произошло переключение тега.
+
 spring:
   datasource:
     driver-class-name: "ru.yandex.clickhouse.ClickHouseDriver"
@@ -27,7 +38,7 @@ spring:
     host: docker01.dev.mdlp.crpt.tech
     port: 6379
   kafka:
-    topic: "nanshakov17"
+    topic: "nanshakov18"
     producer:
       bootstrap:
         servers: docker01.dev.mdlp.crpt.tech:9092

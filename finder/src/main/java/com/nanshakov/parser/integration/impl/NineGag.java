@@ -39,11 +39,14 @@ public class NineGag extends BaseIntegrationImpl<NineGagDto, NineGagDto.Post> {
     private long duplicatesCountLimit;
     @Value("${NineGag.download-url}")
     private String downloadUrl;
-
+    @Value("${type}")
+    String type;
 
     @PostConstruct
     public void postConstruct() {
-        addParams(tags, isRecursionModeEnable, recursionDepth, duplicatesCountLimit, downloadUrl);
+        if (type.contains(getPlatform().toString())) {
+            addParams(tags, isRecursionModeEnable, recursionDepth, duplicatesCountLimit);
+        }
     }
 
     @Override

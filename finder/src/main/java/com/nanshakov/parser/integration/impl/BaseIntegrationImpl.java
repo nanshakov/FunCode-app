@@ -36,14 +36,13 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
-    String downloadUrl;
     String currentTag;
     int page = 0;
 
     @Value("${spring.kafka.topic}")
     private String topic;
     @Autowired
-    private TagsService tagsService;
+    TagsService tagsService;
     @Autowired
     private ApplicationContext ctx;
     @Autowired
@@ -52,7 +51,7 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
     private String tags;
     private boolean isRecursionModeEnable;
     private long recursionDepth;
-    private long duplicatesCountLimit;
+    long duplicatesCountLimit;
 
     Counter duplicatesCounter = Metrics.counter("parse.duplicates", "parse", "duplicates");
     Counter successfulCounter = Metrics.counter("parse.successful", "parse", "successful");
@@ -65,19 +64,18 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
             String tags,
             boolean isRecursionModeEnable,
             long recursionDepth,
-            long duplicatesCountLimit, String downloadUrl) {
+            long duplicatesCountLimit) {
         this.tags = tags;
         this.isRecursionModeEnable = isRecursionModeEnable;
         this.recursionDepth = recursionDepth;
         this.duplicatesCountLimit = duplicatesCountLimit;
-        this.downloadUrl = downloadUrl;
+        loadTags();
+        printInfo();
+        setNextTag();
     }
 
     @Override
     public void run() {
-        loadTags();
-        printInfo();
-        setNextTag();
         while (!tagsService.isEmpty()) {
             PageObject rawPosts = getPage();
             //Если произошла ошибка парсинга
@@ -96,11 +94,11 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
                     continue;
                 }
                 sendToKafka(post);
-            }
 
-            if (duplicatesCount > duplicatesCountLimit) {
-                log.info("Switch by duplicates {}", duplicatesCount);
-                setNextTag();
+                if (duplicatesCount > duplicatesCountLimit) {
+                    log.info("Switch by duplicates {}", duplicatesCount);
+                    setNextTag();
+                }
             }
 
             //Если достигли лимита рекурсивного обхода
@@ -127,17 +125,15 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
     /**
      * Получает новый тег и сбрасывает счетчик страницы
      */
-    private void setNextTag() {
+    void setNextTag() {
         duplicatesCount = 0;
-        if (isRecursionModeEnable) {
-            log.trace("Tags: {}", tagsService.getTags());
-            currentTag = tagsService.pop();
-            page = 0;
-            if (currentTag != null) {
-                log.info("Current tag is: {}", currentTag);
-            } else {
-                log.warn("Tag is null!");
-            }
+        log.trace("Tags: {}", tagsService.getTags());
+        currentTag = tagsService.pop();
+        page = 0;
+        if (currentTag != null) {
+            log.info("Current tag is: {}", currentTag);
+        } else {
+            log.warn("Tag is null!");
         }
     }
 
@@ -146,23 +142,22 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
         return !redisTemplate.opsForValue().setIfAbsent(hash, Status.ACCEPTED, Duration.of(60L, ChronoUnit.MINUTES));
     }
 
-    boolean sendToKafka(PostDto post) {
+    void sendToKafka(PostDto post) {
         String hash = calculateHash(post);
         successfulCounter.increment();
         if (!existInRedis(hash)) {
             duplicatesCount = 0;
-            //kafkaTemplate.send(topic, hash, post);
-            return true;
+            kafkaTemplate.send(topic, hash, post);
         } else {
             log.trace("Post {} with hash {} found in redis, do nothing", post, hash);
             duplicatesCounter.increment();
             duplicatesCount++;
-            return false;
         }
 
     }
 
-    boolean checkLang(String str) {
+    boolean checkLang(@Null String str) {
+        if (str == null) { return true; }
         if (!str.isEmpty()) {
             if (!StopWords.German.isStopWord(str)) {
                 dropCounter.increment();

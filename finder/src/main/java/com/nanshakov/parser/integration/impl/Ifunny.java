@@ -31,10 +31,14 @@ public class Ifunny extends BaseIntegrationImpl<Document, Element> {
     private String tags;
     @Value("${IFUNNY.download-url}")
     private String downloadUrl;
+    @Value("${type}")
+    String type;
 
     @PostConstruct
     public void postConstruct() {
-        addParams(tags, false, 100, 100, downloadUrl);
+        if (type.contains(getPlatform().toString())) {
+            addParams(tags, false, 100, 100);
+        }
     }
 
     @Override
