@@ -91,7 +91,13 @@ public class Reddit extends BaseIntegrationImpl<Object, Object> {
                             if (post.isCheckLangNeeded() && !checkLang(post.getAlt())) {
                                 continue;
                             }
+
                             sendToKafka(post);
+
+                            if (duplicatesCount > duplicatesCountLimit) {
+                                log.info("Switch by duplicates {}", duplicatesCount);
+                                setNextTag();
+                            }
                         }
                     }
                 }
@@ -99,9 +105,13 @@ public class Reddit extends BaseIntegrationImpl<Object, Object> {
                 log.error(e);
                 errorsCounter.increment();
             } finally {
-                currentTag = tagsService.pop();
+                setNextTag();
             }
         }
+    }
+
+    private void setNextTag() {
+        currentTag = tagsService.pop();
     }
 
     @Override

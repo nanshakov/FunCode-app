@@ -51,7 +51,7 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
     private String tags;
     private boolean isRecursionModeEnable;
     private long recursionDepth;
-    private long duplicatesCountLimit;
+    long duplicatesCountLimit;
 
     Counter duplicatesCounter = Metrics.counter("parse.duplicates", "parse", "duplicates");
     Counter successfulCounter = Metrics.counter("parse.successful", "parse", "successful");
@@ -94,11 +94,11 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
                     continue;
                 }
                 sendToKafka(post);
-            }
 
-            if (duplicatesCount > duplicatesCountLimit) {
-                log.info("Switch by duplicates {}", duplicatesCount);
-                setNextTag();
+                if (duplicatesCount > duplicatesCountLimit) {
+                    log.info("Switch by duplicates {}", duplicatesCount);
+                    setNextTag();
+                }
             }
 
             //Если достигли лимита рекурсивного обхода
