@@ -1,8 +1,5 @@
 package com.nanshakov.controller.response;
 
-import com.nanshakov.common.dto.Platform;
-import com.nanshakov.common.dto.Type;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -34,10 +31,6 @@ public class Post implements Serializable {
     String url;
 
     String alt;
-
-    Platform from;
-
-    Type type;
 
     String title;
 }

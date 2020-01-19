@@ -140,7 +140,6 @@ public class ClickHouseDao implements PostMetaRepository {
                 .dateTime(LocalDateTime.parse(rs.getString("datetime"), dateTimeFormatter))
                 .dislikes(rs.getLong("dislikes"))
                 .likes(rs.getLong("likes"))
-                //.from(rs.getString("source"))
                 .id(rs.getString("contentHash"))
                 .pathToContent(rs.getString("pathToContent"))
                 .url(rs.getString("sourceUrl"))
