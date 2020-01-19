@@ -32,7 +32,7 @@ NineGag:
 Reddit:
   tags: "asozialesnetzwerk,ich_iel,kreiswichs,Lustig,NichtDerPostillon,schland,wasletztepreis,austria,switzerland,liechtenstein,Luxembourg,DSA_RPG,PietSmiet,zocken,600euro,aeiou,doener,DEjobs,depression_de,de_IAmA,de_EDV,de_it,erasmus,finanzen,fragreddit,germantrees,GermanyPics,Geschichte,kochen,recht,veganDE,Weibsvolk,wissenschaft"
   username: "nanshakov"
-  password: "112233"
+  password: ""
   clientId: "zCfokV2al_OClQ"
   clientSecret: "qLckFw3cI4-546QhO0yZLouWiDQ"
   recursion:
@@ -58,6 +58,8 @@ Arabic, Armenian, Catalan, Croatian, Czech, Dutch(),
     depth: 10000 - максимальная глубина рекурсии
     duplicates-count: 50 #сколько должно быть дубликатов подряд, что бы произошло переключение тега.
 ```
+
+для Reddita использовалась библиотека https://mattbdean.gitbooks.io/jraw/, необходимо зарегестрировать приложение и создать токены (https://mattbdean.gitbooks.io/jraw/oauth2.html)
 
 ## Сборка
 `
@@ -115,6 +117,17 @@ s3.bucket: "nanshakov"
 s3.port: 9999
 ```
 ## Эндпоинты
+| Путь | Описание |
+| ------ | ------ |
+|GET /feed | Лента с сортировкой для самых новых |
+|GET /feed/hot | Лента самых популярных |
+|GET /feed/{id} | Отдельно пост по id |
+
+параметры запросов 
+| Параметр | Описание |
+| ------ | ------ |
+|pageNum | Номер страницы default 1|
+|count | Количество default 50|
 
 ## Метрики
 
