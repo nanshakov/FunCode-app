@@ -105,13 +105,21 @@ public class Reddit extends BaseIntegrationImpl<Object, Object> {
                 log.error(e);
                 errorsCounter.increment();
             } finally {
+                log.info("Switch by cursor (nextId) is null. End of data.");
                 setNextTag();
             }
         }
     }
 
     private void setNextTag() {
+        duplicatesCount = 0;
+        log.trace("Tags: {}", tagsService.getTags());
         currentTag = tagsService.pop();
+        if (currentTag != null) {
+            log.info("Current tag is: {}", currentTag);
+        } else {
+            log.warn("Tag is null!");
+        }
     }
 
     @Override

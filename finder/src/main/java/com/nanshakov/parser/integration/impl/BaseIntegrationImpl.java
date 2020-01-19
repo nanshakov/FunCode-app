@@ -144,18 +144,16 @@ public abstract class BaseIntegrationImpl<PageObject, SingleObject> implements B
         return !redisTemplate.opsForValue().setIfAbsent(hash, Status.ACCEPTED, Duration.of(60L, ChronoUnit.MINUTES));
     }
 
-    boolean sendToKafka(PostDto post) {
+    void sendToKafka(PostDto post) {
         String hash = calculateHash(post);
         successfulCounter.increment();
         if (!existInRedis(hash)) {
             duplicatesCount = 0;
             //kafkaTemplate.send(topic, hash, post);
-            return true;
         } else {
             log.trace("Post {} with hash {} found in redis, do nothing", post, hash);
             duplicatesCounter.increment();
             duplicatesCount++;
-            return false;
         }
 
     }
